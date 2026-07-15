@@ -1,0 +1,175 @@
+---
+import type { Project } from "@/data/projects";
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const { title, description, tags, emoji, accent, url, repo, year } = project;
+---
+
+<article class:list={["proj card", `accent-${accent}`]}>
+  <div class="proj-head">
+    <span class="proj-emoji" aria-hidden="true">{emoji}</span>
+    <span class="proj-year">{year}</span>
+  </div>
+
+  <h3 class="proj-title">{title}</h3>
+  <p class="proj-desc">{description}</p>
+
+  <ul class="proj-tags">
+    {tags.map((t) => <li class="proj-tag">{t}</li>)}
+  </ul>
+
+  <div class="proj-links">
+    {
+      url && (
+        <a href={url} target="_blank" rel="noopener" class="proj-link">
+          去看看 <span aria-hidden="true">↗</span>
+        </a>
+      )
+    }
+    {
+      repo && (
+        <a href={repo} target="_blank" rel="noopener" class="proj-link ghost">
+          源码
+        </a>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .proj {
+    --accent: var(--sakura);
+    --accent-deep: var(--sakura-deep);
+    --accent-soft: var(--sakura-soft);
+    display: flex;
+    flex-direction: column;
+    padding: 1.6rem;
+    height: 100%;
+    overflow: hidden;
+  }
+  .proj::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+  .proj:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+    box-shadow:
+      0 0 0 1.5px var(--accent-soft),
+      0 22px 44px -20px var(--accent);
+  }
+  .proj:hover::before {
+    opacity: 1;
+  }
+
+  .accent-sakura {
+    --accent: var(--sakura);
+    --accent-deep: var(--sakura-deep);
+    --accent-soft: var(--sakura-soft);
+  }
+  .accent-sky {
+    --accent: var(--sky);
+    --accent-deep: var(--sky-deep);
+    --accent-soft: var(--sky-soft);
+  }
+  .accent-mint {
+    --accent: var(--mint);
+    --accent-deep: var(--mint-deep);
+    --accent-soft: oklch(95% 0.04 168);
+  }
+  .accent-lavender {
+    --accent: var(--lavender);
+    --accent-deep: var(--lavender-deep);
+    --accent-soft: oklch(95% 0.035 300);
+  }
+
+  .proj-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .proj-emoji {
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    font-size: 1.6rem;
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1.5px oklch(100% 0 0 / 0.5);
+    transition: transform var(--dur) var(--ease-soft);
+  }
+  .proj:hover .proj-emoji {
+    transform: rotate(-8deg) scale(1.08);
+  }
+  .proj-year {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--accent-deep);
+    background: var(--accent-soft);
+    padding: 0.2em 0.7em;
+    border-radius: var(--radius-pill);
+  }
+
+  .proj-title {
+    font-size: var(--text-lg);
+    margin-bottom: 0.5rem;
+  }
+  .proj-desc {
+    color: var(--ink-soft);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    flex: 1;
+  }
+
+  .proj-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 1.1rem 0 0;
+  }
+  .proj-tag {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-xs);
+    color: var(--ink-soft);
+    background: var(--cream-2);
+    border: 1px solid var(--line);
+    padding: 0.24em 0.7em;
+    border-radius: var(--radius-pill);
+  }
+
+  .proj-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.2rem;
+    padding-top: 1.1rem;
+    border-top: 1.5px dashed var(--line);
+  }
+  .proj-link {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--accent-deep);
+    transition: gap var(--dur) var(--ease);
+  }
+  .proj-link.ghost {
+    color: var(--ink-faint);
+  }
+  .proj-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

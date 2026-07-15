@@ -1,0 +1,406 @@
+---
+import { music } from "@/data/music";
+
+const data = { tracks: music.tracks, autoplay: music.autoplay };
+---
+
+<div id="music-player" class="mplayer" data-first={music.tracks[0]?.title}>
+  <!-- 歌单弹层（向上展开） -->
+  <ul class="mp-list" role="listbox" aria-label="播放列表">
+    {
+      music.tracks.map((t, i) => (
+        <li class="mp-track" data-i={i} role="option">
+          <span class="mp-track-idx">{String(i + 1).padStart(2, "0")}</span>
+          <span class="mp-track-meta">
+            <span class="mp-track-title">{t.title}</span>
+            <span class="mp-track-artist">{t.artist}</span>
+          </span>
+          <span class="mp-track-eq" aria-hidden="true">
+            <i></i><i></i><i></i>
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="mp-main">
+    <button class="mp-cover" data-act="toggle" aria-label="播放 / 暂停" title="播放 / 暂停">
+      <img class="mp-cover-img" alt="" />
+      <span class="mp-cover-note" aria-hidden="true">♪</span>
+    </button>
+
+    <div class="mp-info">
+      <div class="mp-title">暂未播放</div>
+      <div class="mp-artist">点击封面开始</div>
+      <div class="mp-bar" role="slider" aria-label="进度" tabindex="0">
+        <div class="mp-fill"></div>
+      </div>
+      <div class="mp-time">0:00</div>
+    </div>
+
+    <div class="mp-controls">
+      <button data-act="prev" aria-label="上一首" title="上一首">⏮</button>
+      <button data-act="play" class="mp-play" aria-label="播放 / 暂停" title="播放 / 暂停">
+        <span class="mp-icon">▶</span>
+      </button>
+      <button data-act="next" aria-label="下一首" title="下一首">⏭</button>
+      <button data-act="list" aria-label="播放列表" title="播放列表">☰</button>
+    </div>
+  </div>
+
+  <script type="application/json" set:html={JSON.stringify(data)} data-mp-data></script>
+  <audio preload="none"></audio>
+</div>
+
+<script>
+  function initPlayer() {
+    const root = document.getElementById("music-player");
+    if (!root || root.dataset.ready) return;
+    root.dataset.ready = "1";
+
+    const q = <T extends Element>(s: string) => root.querySelector(s) as T;
+    const data = JSON.parse(
+      q<HTMLScriptElement>("[data-mp-data]").textContent || "{}",
+    );
+    const tracks: { title: string; artist: string; src: string; cover?: string }[] =
+      data.tracks || [];
+    if (!tracks.length) return;
+
+    const audio = q<HTMLAudioElement>("audio");
+    const coverImg = q<HTMLImageElement>(".mp-cover-img");
+    const titleEl = q<HTMLElement>(".mp-title");
+    const artistEl = q<HTMLElement>(".mp-artist");
+    const fill = q<HTMLElement>(".mp-fill");
+    const timeEl = q<HTMLElement>(".mp-time");
+    const playIcon = q<HTMLElement>(".mp-icon");
+    const listEl = q<HTMLElement>(".mp-list");
+    const items = Array.from(root.querySelectorAll<HTMLElement>(".mp-track"));
+    let idx = 0;
+
+    const fmt = (s: number) => {
+      s = Math.floor(s || 0);
+      return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+    };
+
+    function load(i: number, play: boolean) {
+      idx = (i + tracks.length) % tracks.length;
+      const t = tracks[idx];
+      audio.src = t.src;
+      titleEl.textContent = t.title;
+      artistEl.textContent = t.artist;
+      if (t.cover) {
+        coverImg.src = t.cover;
+        coverImg.style.opacity = "1";
+      } else {
+        coverImg.removeAttribute("src");
+        coverImg.style.opacity = "0";
+      }
+      items.forEach((li, n) => li.classList.toggle("active", n === idx));
+      if (play) audio.play().catch(() => {});
+    }
+
+    function setPlaying(p: boolean) {
+      root.classList.toggle("playing", p);
+      playIcon.textContent = p ? "⏸" : "▶";
+    }
+
+    const toggle = () => (audio.paused ? audio.play() : audio.pause());
+    q(".mp-cover").addEventListener("click", toggle);
+    q('[data-act="play"]').addEventListener("click", toggle);
+    q('[data-act="prev"]').addEventListener("click", () => load(idx - 1, true));
+    q('[data-act="next"]').addEventListener("click", () => load(idx + 1, true));
+    q('[data-act="list"]').addEventListener("click", () =>
+      root.classList.toggle("open"),
+    );
+    items.forEach((li, n) =>
+      li.addEventListener("click", () => {
+        load(n, true);
+        root.classList.remove("open");
+      }),
+    );
+
+    audio.addEventListener("play", () => setPlaying(true));
+    audio.addEventListener("pause", () => setPlaying(false));
+    audio.addEventListener("ended", () => load(idx + 1, true));
+    audio.addEventListener("timeupdate", () => {
+      if (audio.duration) {
+        fill.style.width = (audio.currentTime / audio.duration) * 100 + "%";
+        timeEl.textContent = fmt(audio.currentTime) + " / " + fmt(audio.duration);
+      }
+    });
+
+    const bar = q<HTMLElement>(".mp-bar");
+    bar.addEventListener("click", (e) => {
+      const r = bar.getBoundingClientRect();
+      const p = (e.clientX - r.left) / r.width;
+      if (audio.duration) audio.currentTime = Math.max(0, Math.min(1, p)) * audio.duration;
+    });
+
+    // 点击播放器外部收起歌单
+    document.addEventListener("click", (e) => {
+      if (root.classList.contains("open") && !root.contains(e.target as Node)) {
+        root.classList.remove("open");
+      }
+    });
+
+    load(0, data.autoplay);
+  }
+
+  initPlayer();
+  document.addEventListener("astro:page-load", initPlayer);
+</script>
+
+<style>
+  .mplayer {
+    position: fixed;
+    left: 1.2rem;
+    bottom: 1.2rem;
+    z-index: 45;
+    width: min(330px, calc(100vw - 2rem));
+    font-family: var(--font-display);
+    color: var(--ink);
+  }
+
+  .mp-main {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem;
+    border-radius: var(--radius-lg);
+    background: oklch(99.5% 0.004 95 / 0.7);
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    border: 1.5px solid oklch(100% 0 0 / 0.65);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* 封面唱片 */
+  .mp-cover {
+    position: relative;
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--sakura), var(--lavender));
+    box-shadow:
+      inset 0 0 0 3px oklch(100% 0 0 / 0.55),
+      var(--shadow-sm);
+    display: grid;
+    place-items: center;
+  }
+  .mp-cover-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+  .mp-cover-note {
+    color: white;
+    font-size: 1.2rem;
+    text-shadow: 0 1px 3px oklch(40% 0.1 340 / 0.6);
+  }
+  .mplayer.playing .mp-cover {
+    animation: spin-disc 8s linear infinite;
+  }
+  @keyframes spin-disc {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .mp-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .mp-title {
+    font-weight: 700;
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mp-artist {
+    font-size: var(--text-xs);
+    color: var(--ink-faint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mp-bar {
+    margin-top: 0.35rem;
+    height: 5px;
+    border-radius: var(--radius-pill);
+    background: var(--line-strong);
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .mp-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--sakura-deep), var(--lavender-deep));
+    transition: width 0.15s linear;
+  }
+  .mp-time {
+    margin-top: 0.15rem;
+    font-size: 0.68rem;
+    color: var(--ink-faint);
+  }
+
+  .mp-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    flex-shrink: 0;
+  }
+  .mp-controls button {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    display: grid;
+    place-items: center;
+    transition:
+      background var(--dur) var(--ease),
+      color var(--dur) var(--ease),
+      transform var(--dur-fast) var(--ease-soft);
+  }
+  .mp-controls button:hover {
+    background: var(--sakura-soft);
+    color: var(--sakura-deep);
+    transform: scale(1.12);
+  }
+  .mp-play {
+    color: var(--sakura-deep) !important;
+    background: var(--sakura-soft);
+  }
+
+  /* 歌单弹层 */
+  .mp-list {
+    list-style: none;
+    margin: 0 0 0.5rem;
+    padding: 0.4rem;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden auto;
+    border-radius: var(--radius-lg);
+    background: oklch(99.5% 0.004 95 / 0.78);
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    border: 1.5px solid transparent;
+    transform: translateY(8px);
+    transition:
+      max-height var(--dur) var(--ease),
+      opacity var(--dur) var(--ease),
+      transform var(--dur) var(--ease);
+  }
+  .mplayer.open .mp-list {
+    max-height: 240px;
+    opacity: 1;
+    transform: none;
+    border-color: oklch(100% 0 0 / 0.65);
+    box-shadow: var(--shadow-lg);
+  }
+  .mp-track {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease);
+  }
+  .mp-track:hover {
+    background: var(--sakura-soft);
+  }
+  .mp-track-idx {
+    font-size: 0.72rem;
+    color: var(--ink-faint);
+    font-weight: 700;
+  }
+  .mp-track-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .mp-track-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mp-track-artist {
+    font-size: 0.68rem;
+    color: var(--ink-faint);
+  }
+  .mp-track.active .mp-track-title {
+    color: var(--sakura-deep);
+  }
+  .mp-track.active .mp-track-idx {
+    color: var(--sakura-deep);
+  }
+
+  /* 播放中的小律动条 */
+  .mp-track-eq {
+    display: none;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+  }
+  .mp-track.active .mp-track-eq {
+    display: flex;
+  }
+  .mp-track-eq i {
+    width: 3px;
+    background: var(--sakura-deep);
+    border-radius: 2px;
+    animation: eq 0.9s ease-in-out infinite;
+  }
+  .mp-track-eq i:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+  .mp-track-eq i:nth-child(3) {
+    animation-delay: 0.6s;
+  }
+  @keyframes eq {
+    0%, 100% {
+      height: 4px;
+    }
+    50% {
+      height: 12px;
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .mplayer {
+      left: 0.75rem;
+      bottom: 0.75rem;
+      width: calc(100vw - 1.5rem);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mplayer.playing .mp-cover,
+    .mp-track-eq i {
+      animation: none;
+    }
+  }
+
+  /* 深色玻璃播放器 */
+  :global(html[data-theme="dark"]) .mp-main,
+  :global(html[data-theme="dark"]) .mp-list {
+    background: oklch(28% 0.03 290 / 0.74);
+  }
+  :global(html[data-theme="dark"]) .mp-main {
+    border-color: oklch(80% 0.02 300 / 0.16);
+  }
+  :global(html[data-theme="dark"]) .mplayer.open .mp-list {
+    border-color: oklch(80% 0.02 300 / 0.16);
+  }
+</style>

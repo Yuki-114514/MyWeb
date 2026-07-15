@@ -1,0 +1,220 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { site } from "@/data/site";
+import Avatar from "@/components/Avatar.astro";
+import SocialLinks from "@/components/SocialLinks.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+
+const accentClass: Record<string, string> = {
+  sakura: "pill--pink",
+  sky: "pill--blue",
+  mint: "pill--mint",
+  lav: "pill--lav",
+};
+---
+
+<BaseLayout title="关于" description={site.intro}>
+  <section class="container container-narrow">
+    <!-- Intro -->
+    <header class="about-head reveal">
+      <div class="about-avatar">
+        <Avatar size={132} />
+      </div>
+      <div>
+        <span class="eyebrow">✦ About me</span>
+        <h1 class="about-title">关于我这个人</h1>
+        <p class="about-sub">{site.role} · {site.location}</p>
+      </div>
+    </header>
+
+    <div class="bio reveal" data-delay="1">
+      {site.about.map((para) => <p>{para}</p>)}
+    </div>
+
+    <!-- Skills -->
+    <div class="reveal">
+      <SectionHeading eyebrow="Toolbox" title="我的工具箱" />
+    </div>
+    <div class="skills">
+      {
+        site.skills.map((group, i) => (
+          <div class="skill-card card reveal" data-delay={((i % 3) + 1) as 1 | 2 | 3}>
+            <h3 class="skill-label">{group.label}</h3>
+            <ul class="skill-list">
+              {group.items.map((s) => (
+                <li class:list={["pill", accentClass[group.accent]]}>{s}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Timeline -->
+    <div class="reveal" style="margin-top: var(--space-section)">
+      <SectionHeading eyebrow="Journey" title="一路走来" />
+    </div>
+    <ol class="timeline">
+      {
+        site.timeline.map((item, i) => (
+          <li class="tl-item reveal" data-delay={((i % 3) + 1) as 1 | 2 | 3}>
+            <span class="tl-dot" aria-hidden="true" />
+            <span class="tl-when">{item.when}</span>
+            <div class="tl-body">
+              <h3 class="tl-title">{item.title}</h3>
+              <p class="tl-desc">{item.desc}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <!-- Contact -->
+    <div class="contact reveal">
+      <h2 class="contact-title">找我玩 🐾</h2>
+      <p class="contact-text">
+        邮箱是 <a href={`mailto:${site.email}`} class="link">{site.email}</a>，
+        或者在下面这些地方戳我～
+      </p>
+      <SocialLinks class="contact-social" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about-head {
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    padding-top: 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .about-avatar {
+    flex-shrink: 0;
+  }
+  .about-title {
+    font-size: var(--text-2xl);
+    margin-top: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .about-sub {
+    color: var(--ink-soft);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-sm);
+  }
+
+  .bio {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--ink);
+    padding: 1.8rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(160deg, var(--paper), var(--cream-2));
+    border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-section);
+  }
+
+  .skills {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1.2rem;
+  }
+  .skill-card {
+    padding: 1.5rem;
+  }
+  .skill-label {
+    font-size: var(--text-lg);
+    margin-bottom: 1rem;
+    color: var(--sakura-deep);
+  }
+  .skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  /* Timeline */
+  .timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2.5px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(var(--sakura), var(--lavender), var(--sky));
+  }
+  .tl-item {
+    position: relative;
+    padding-left: 2.4rem;
+    padding-block: 1rem;
+  }
+  .tl-dot {
+    position: absolute;
+    left: 0;
+    top: 1.5rem;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3.5px solid var(--sakura-deep);
+    box-shadow: 0 0 0 4px var(--sakura-soft);
+  }
+  .tl-when {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--sakura-deep);
+  }
+  .tl-title {
+    font-size: var(--text-lg);
+    margin-top: 0.2rem;
+  }
+  .tl-desc {
+    color: var(--ink-soft);
+    font-size: var(--text-sm);
+    margin-top: 0.2rem;
+  }
+
+  /* Contact */
+  .contact {
+    margin-top: var(--space-section);
+    text-align: center;
+    padding: clamp(2rem, 4vw, 3rem);
+    border-radius: var(--radius-xl);
+    background: radial-gradient(120% 120% at 50% 0%, var(--sakura-soft), var(--cream-3) 70%);
+    border: 1.5px solid var(--line);
+  }
+  .contact-title {
+    font-size: var(--text-xl);
+  }
+  .contact-text {
+    color: var(--ink-soft);
+    margin: 0.6rem auto 1.4rem;
+    max-width: 30rem;
+  }
+  .contact-social {
+    justify-content: center;
+  }
+
+  @media (max-width: 34rem) {
+    .about-head {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+  }
+</style>

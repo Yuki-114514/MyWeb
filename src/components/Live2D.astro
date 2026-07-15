@@ -1,0 +1,130 @@
+---
+/*
+ * 右下角 Live2D 看板娘。
+ * 资源来自 CDN（live2d-widgets v1，作者 stevenjoezhang）。
+ * 关键点：把生成的 #waifu 收进一个带 transition:persist 的锚点里，
+ * 这样在页面切换（Astro 视图过渡）时看板娘不会消失、动画不中断。
+ * 手机/窄屏（<820px）自动不加载。
+ */
+---
+
+<div id="live2d-anchor" transition:persist="live2d" aria-hidden="true"></div>
+
+<script>
+  const BASE = "https://fastly.jsdelivr.net/npm/live2d-widgets@1.0.1/dist/";
+  const CUBISM5 =
+    "https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js";
+  let coreStarted = false;
+
+  const anchor = () => document.getElementById("live2d-anchor");
+  const waifu = () => document.getElementById("waifu");
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  // 把看板娘收进持久化锚点
+  function stow() {
+    const w = waifu();
+    const a = anchor();
+    if (w && a && w.parentElement !== a) a.appendChild(w);
+  }
+
+  function loadCss() {
+    if (document.querySelector("link[data-l2d]")) return;
+    const l = document.createElement("link");
+    l.rel = "stylesheet";
+    l.href = BASE + "waifu.css";
+    l.dataset.l2d = "1";
+    document.head.appendChild(l);
+  }
+
+  function loadModule(src: string) {
+    return new Promise<void>((res, rej) => {
+      const s = document.createElement("script");
+      s.type = "module";
+      s.src = src;
+      s.onload = () => res();
+      s.onerror = () => rej(new Error("live2d load failed"));
+      document.head.appendChild(s);
+    });
+  }
+
+  async function boot() {
+    // 窄屏（手机）不加载，按视口宽度判断
+    if (window.matchMedia("(max-width: 819px)").matches) return;
+    if (!anchor()) return;
+    if (waifu()) {
+      stow();
+      return;
+    }
+
+    // 让模型贴图跨域可用
+    const w = window as any;
+    if (!w.__l2dImg) {
+      w.__l2dImg = true;
+      const OI = w.Image;
+      w.Image = function (...a: any[]) {
+        const i = new OI(...a);
+        i.crossOrigin = "anonymous";
+        return i;
+      };
+      w.Image.prototype = OI.prototype;
+    }
+
+    loadCss();
+    if (!coreStarted) {
+      coreStarted = true;
+      try {
+        await loadModule(BASE + "waifu-tips.js");
+      } catch {
+        return;
+      }
+    }
+
+    let n = 0;
+    while (typeof w.initWidget !== "function" && n++ < 80) await wait(50);
+    if (typeof w.initWidget !== "function") return;
+
+    if (!waifu()) {
+      w.initWidget({
+        // 本地歌单式模型清单：第一个即默认。想换默认角色改这里数组顺序即可。
+        waifuPath: "/live2d/waifu-tips.json",
+        cubism2Path: BASE + "live2d.min.js",
+        cubism5Path: CUBISM5,
+        tools: ["hitokoto", "switch-model", "switch-texture", "photo", "quit"],
+        logLevel: "warn",
+        drag: false,
+      });
+    }
+
+    // 等 #waifu 生成后收进锚点
+    let m = 0;
+    const iv = setInterval(() => {
+      if (waifu()) {
+        stow();
+        clearInterval(iv);
+      } else if (m++ > 80) clearInterval(iv);
+    }, 100);
+  }
+
+  boot();
+  document.addEventListener("astro:page-load", () => {
+    stow();
+    boot();
+  });
+</script>
+
+<style is:global>
+  /* 看板娘挪到右下角，避开左下角的音乐播放器 */
+  #waifu {
+    /* position/bottom 兜底：即便 CDN 样式没就绪，也不会掉进文档流把布局撑爆 */
+    position: fixed !important;
+    bottom: 0 !important;
+    left: auto !important;
+    right: 0 !important;
+    z-index: 34 !important;
+  }
+  @media (max-width: 819px) {
+    #waifu {
+      display: none !important;
+    }
+  }
+</style>

@@ -1,0 +1,129 @@
+---
+import { theme } from "@/data/theme";
+
+const hasWp = theme.wallpaper.trim().length > 0;
+const wpMobile = theme.wallpaperMobile || theme.wallpaper;
+
+// 少量花瓣，比之前更克制
+const petals = [
+  { left: 8, size: 12, dur: 17, delay: 0, drift: 40, spin: 220, hue: 350 },
+  { left: 24, size: 9, dur: 21, delay: 5, drift: -28, spin: -180, hue: 340 },
+  { left: 42, size: 14, dur: 15, delay: 2, drift: 55, spin: 300, hue: 320 },
+  { left: 58, size: 8, dur: 24, delay: 8, drift: -22, spin: -240, hue: 230 },
+  { left: 72, size: 13, dur: 18, delay: 3, drift: 34, spin: 200, hue: 350 },
+  { left: 88, size: 10, dur: 20, delay: 6, drift: -40, spin: -200, hue: 300 },
+];
+---
+
+<div
+  class="wallpaper"
+  aria-hidden="true"
+  style={`--wp:url('${theme.wallpaper}');--wp-m:url('${wpMobile}');--ov:${theme.overlay};--blur:${theme.wallpaperBlur}px`}
+>
+  {hasWp ? <div class="wp-img"></div> : <div class="wp-fallback"></div>}
+  <div class="wp-veil"></div>
+  {
+    theme.petals && (
+      <div class="petals">
+        {petals.map((p) => (
+          <span
+            class="petal"
+            style={`--left:${p.left}%;--s:${p.size}px;--dur:${p.dur}s;--delay:${p.delay}s;--drift:${p.drift}px;--spin:${p.spin}deg;--hue:${p.hue}`}
+          />
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .wallpaper {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .wp-img {
+    position: absolute;
+    inset: -4%;
+    background-image: var(--wp);
+    background-size: cover;
+    background-position: center;
+    filter: blur(var(--blur)) saturate(1.05);
+    transform: scale(1.06);
+  }
+  .wp-fallback {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 50% at 20% 10%, oklch(90% 0.08 350 / 0.9), transparent 70%),
+      radial-gradient(60% 55% at 85% 20%, oklch(90% 0.07 232 / 0.85), transparent 70%),
+      radial-gradient(70% 60% at 60% 100%, oklch(90% 0.07 300 / 0.85), transparent 70%),
+      var(--cream);
+  }
+
+  /* 柔纱层：颜色随主题切换（token），浓度由 --ov 控制 */
+  .wp-veil {
+    position: absolute;
+    inset: 0;
+    opacity: var(--ov);
+    background: linear-gradient(
+      180deg,
+      var(--veil-a),
+      var(--veil-b) 45%,
+      var(--veil-c)
+    );
+    transition: background 0.38s var(--ease);
+  }
+
+  @media (max-width: 640px) {
+    .wp-img {
+      background-image: var(--wp-m);
+    }
+  }
+
+  /* 花瓣 */
+  .petals {
+    position: absolute;
+    inset: 0;
+  }
+  .petal {
+    position: absolute;
+    top: -6vh;
+    left: var(--left);
+    width: var(--s);
+    height: var(--s);
+    background: linear-gradient(
+      135deg,
+      oklch(95% 0.05 var(--hue)),
+      oklch(86% 0.1 var(--hue))
+    );
+    border-radius: 100% 0 100% 0;
+    opacity: 0;
+    animation: fall var(--dur) linear var(--delay) infinite;
+  }
+  @keyframes fall {
+    0% {
+      transform: translateY(-8vh) translateX(0) rotate(0deg);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.75;
+    }
+    88% {
+      opacity: 0.75;
+    }
+    100% {
+      transform: translateY(108vh) translateX(var(--drift)) rotate(var(--spin));
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .petals {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,185 @@
+---
+/*
+ * 头像组件。
+ * - 若 theme.avatar 有配置（或传入 src），显示真实图片（圆形裁切）。
+ * - 否则回退到内置的猫耳吉祥物 SVG。
+ */
+import { theme } from "@/data/theme";
+
+interface Props {
+  size?: number;
+  class?: string;
+  /** 覆盖 theme.avatar，用于单独指定某张图 */
+  src?: string;
+}
+const { size = 168, class: className = "", src } = Astro.props;
+const img = src ?? theme.avatar;
+const useImg = typeof img === "string" && img.trim().length > 0;
+---
+
+{
+  useImg ? (
+    <div
+      class:list={["avatar avatar--img", className]}
+      style={`--avatar-size:${size}px`}
+    >
+      <img src={img} alt="头像" width={size} height={size} loading="eager" />
+      <span class="av-ring" aria-hidden="true" />
+      <span class="av-badge" aria-hidden="true">
+        ♪
+      </span>
+    </div>
+  ) : (
+    <div
+      class:list={["avatar", className]}
+      style={`--avatar-size:${size}px`}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 200 200" role="img" aria-label="吉祥物头像">
+        <defs>
+          <radialGradient id="av-halo" cx="50%" cy="42%" r="62%">
+            <stop offset="0%" stop-color="oklch(95% 0.05 350)" />
+            <stop offset="55%" stop-color="oklch(93% 0.05 300)" />
+            <stop offset="100%" stop-color="oklch(94% 0.05 230)" />
+          </radialGradient>
+          <linearGradient id="av-face" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="oklch(99.5% 0.006 90)" />
+            <stop offset="100%" stop-color="oklch(96.5% 0.03 340)" />
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="96" fill="url(#av-halo)" />
+        <path
+          d="M64 66 L74 22 Q76 18 80 21 L108 54 Z"
+          fill="url(#av-face)"
+          stroke="oklch(86% 0.03 340)"
+          stroke-width="2.5"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M136 66 L126 22 Q124 18 120 21 L92 54 Z"
+          fill="url(#av-face)"
+          stroke="oklch(86% 0.03 340)"
+          stroke-width="2.5"
+          stroke-linejoin="round"
+        />
+        <path d="M72 52 L77 30 L92 50 Z" fill="oklch(88% 0.09 350)" />
+        <path d="M128 52 L123 30 L108 50 Z" fill="oklch(88% 0.09 350)" />
+        <circle
+          cx="100"
+          cy="112"
+          r="58"
+          fill="url(#av-face)"
+          stroke="oklch(86% 0.03 340)"
+          stroke-width="2.5"
+        />
+        <ellipse cx="74" cy="120" rx="10" ry="6.5" fill="oklch(85% 0.1 12)" opacity="0.6" />
+        <ellipse cx="126" cy="120" rx="10" ry="6.5" fill="oklch(85% 0.1 12)" opacity="0.6" />
+        <path
+          d="M70 106 Q82 94 94 106"
+          fill="none"
+          stroke="oklch(40% 0.03 288)"
+          stroke-width="4.5"
+          stroke-linecap="round"
+        />
+        <path
+          d="M106 106 Q118 94 130 106"
+          fill="none"
+          stroke="oklch(40% 0.03 288)"
+          stroke-width="4.5"
+          stroke-linecap="round"
+        />
+        <path
+          d="M92 122 Q100 132 108 122"
+          fill="none"
+          stroke="oklch(40% 0.03 288)"
+          stroke-width="3.5"
+          stroke-linecap="round"
+        />
+        <path
+          class="av-sparkle"
+          d="M150 44 q3 9 12 12 q-9 3 -12 12 q-3 -9 -12 -12 q9 -3 12 -12 Z"
+          fill="oklch(96% 0.09 100)"
+        />
+      </svg>
+    </div>
+  )
+}
+
+<style>
+  .avatar {
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    filter: drop-shadow(0 18px 30px oklch(72% 0.12 340 / 0.35));
+    animation: avatar-bob 5.5s var(--ease) infinite;
+  }
+
+  /* 图片头像 */
+  .avatar--img {
+    position: relative;
+    border-radius: 50%;
+  }
+  .avatar--img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid oklch(100% 0 0 / 0.85);
+    box-shadow: var(--shadow);
+  }
+  .av-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px dashed oklch(80% 0.09 340 / 0.8);
+    animation: spin-ring 24s linear infinite;
+  }
+  .av-badge {
+    position: absolute;
+    right: 4%;
+    bottom: 4%;
+    width: 30%;
+    height: 30%;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sakura-deep), var(--lavender-deep));
+    color: white;
+    font-size: calc(var(--avatar-size) * 0.13);
+    box-shadow: var(--shadow-sm);
+  }
+  @keyframes spin-ring {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .av-sparkle {
+    transform-origin: 150px 56px;
+    animation: sparkle 3.2s ease-in-out infinite;
+  }
+  @keyframes avatar-bob {
+    0%, 100% {
+      transform: translateY(0) rotate(-1.5deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(1.5deg);
+    }
+  }
+  @keyframes sparkle {
+    0%, 100% {
+      transform: scale(0.7);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scale(1.15);
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .avatar,
+    .av-sparkle,
+    .av-ring {
+      animation: none;
+    }
+  }
+</style>

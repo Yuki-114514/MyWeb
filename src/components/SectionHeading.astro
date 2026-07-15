@@ -1,0 +1,45 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  align?: "left" | "center";
+}
+const { eyebrow, title, align = "left" } = Astro.props;
+---
+
+<div class:list={["heading", `heading--${align}`]}>
+  {eyebrow && <span class="eyebrow">✦ {eyebrow}</span>}
+  <h2 class="heading-title">{title}</h2>
+</div>
+
+<style>
+  .heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 2.5rem;
+  }
+  .heading--center {
+    align-items: center;
+    text-align: center;
+  }
+  .heading-title {
+    font-size: var(--text-2xl);
+    position: relative;
+    display: inline-block;
+  }
+  .heading-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.35rem;
+    width: 2.6rem;
+    height: 5px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(90deg, var(--sakura), var(--lavender));
+  }
+  .heading--center .heading-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+</style>

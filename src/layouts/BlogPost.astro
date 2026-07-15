@@ -1,0 +1,148 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import { formatDate, readingTime } from "@/lib/format";
+import "@/styles/prose.css";
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, emoji } = post.data;
+const mins = readingTime(post.body ?? "");
+---
+
+<BaseLayout title={title} description={description} ogType="article">
+  <article class="post-page container container-narrow">
+    <a href="/blog" class="back-link">← 回到博客</a>
+
+    <header class="post-header reveal">
+      <span class="post-badge" aria-hidden="true">{emoji}</span>
+      <div class="post-meta">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+        <span class="dot" aria-hidden="true">·</span>
+        <span>{mins}</span>
+      </div>
+      <h1 class="post-h1">{title}</h1>
+      <p class="post-lede">{description}</p>
+      {
+        tags.length > 0 && (
+          <ul class="post-tags">
+            {tags.map((t) => (
+              <li class="pill pill--pink">#{t}</li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+
+    <div class="prose reveal" data-delay="1">
+      <slot />
+    </div>
+
+    {
+      updatedDate && (
+        <p class="updated">最后更新于 {formatDate(updatedDate)}</p>
+      )
+    }
+
+    <footer class="post-foot">
+      <a href="/blog" class="btn btn--ghost">← 看看别的文章</a>
+      <a href="#main" class="to-top" aria-label="回到顶部">↑ 顶部</a>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .post-page {
+    padding-top: 2.5rem;
+  }
+  .back-link {
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+    transition:
+      color var(--dur) var(--ease),
+      transform var(--dur) var(--ease-soft);
+  }
+  .back-link:hover {
+    color: var(--sakura-deep);
+    transform: translateX(-4px);
+  }
+
+  .post-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .post-badge {
+    display: inline-grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    font-size: 2.3rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, var(--sakura-soft), var(--lavender) 180%);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.4rem;
+  }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--ink-faint);
+    margin-bottom: 0.8rem;
+  }
+  .post-h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: 0.9rem;
+  }
+  .post-lede {
+    color: var(--ink-soft);
+    font-size: var(--text-lg);
+    max-width: 34rem;
+    margin-inline: auto;
+  }
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin-top: 1.4rem;
+  }
+
+  .updated {
+    margin-top: 2.5rem;
+    color: var(--ink-faint);
+    font-size: var(--text-sm);
+    font-style: italic;
+  }
+
+  .post-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: 1.5px dashed var(--line-strong);
+  }
+  .to-top {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+    transition: color var(--dur) var(--ease);
+  }
+  .to-top:hover {
+    color: var(--sakura-deep);
+  }
+</style>

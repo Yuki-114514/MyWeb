@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7b8d2"/>
+      <stop offset="1" stop-color="#c9b6f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#fff5fa"/>
+  <g fill="url(#g)">
+    <!-- 五片樱花瓣 -->
+    <g transform="translate(32 32)">
+      <path id="p" d="M0 -19 C 5 -12 5 -5 0 0 C -5 -5 -5 -12 0 -19 Z" transform="rotate(0)"/>
+      <use href="#p" transform="rotate(72)"/>
+      <use href="#p" transform="rotate(144)"/>
+      <use href="#p" transform="rotate(216)"/>
+      <use href="#p" transform="rotate(288)"/>
+    </g>
+  </g>
+  <circle cx="32" cy="32" r="4.2" fill="#fff2b0"/>
+</svg>

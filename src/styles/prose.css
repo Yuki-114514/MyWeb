@@ -1,0 +1,140 @@
+/* Prose — blog article typography, soft & readable */
+.prose {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--ink);
+}
+
+.prose > * + * {
+  margin-top: 1.35em;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: 2em;
+  margin-bottom: 0.2em;
+  scroll-margin-top: 6rem;
+}
+
+.prose h2 {
+  font-size: var(--text-xl);
+  position: relative;
+  padding-left: 0.9rem;
+}
+.prose h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 5px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(var(--sakura), var(--lavender));
+}
+
+.prose h3 {
+  font-size: var(--text-lg);
+  color: var(--sakura-deep);
+}
+
+.prose a {
+  color: var(--sakura-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--sakura);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+  transition: text-decoration-color var(--dur) var(--ease);
+}
+.prose a:hover {
+  text-decoration-color: var(--lavender-deep);
+}
+
+.prose strong {
+  color: var(--ink);
+  font-weight: 700;
+  background: linear-gradient(transparent 62%, var(--sakura-soft) 62%);
+  padding: 0 0.08em;
+}
+
+.prose em {
+  color: var(--lavender-deep);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+.prose li {
+  margin-top: 0.5em;
+}
+.prose ul li::marker {
+  content: "🌸  ";
+  font-size: 0.8em;
+}
+.prose ol li::marker {
+  color: var(--sakura-deep);
+  font-weight: 700;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: 1rem 1.4rem;
+  border-radius: var(--radius);
+  border-left: 5px solid var(--sky);
+  background: var(--sky-soft);
+  color: var(--sky-deep);
+  font-style: italic;
+}
+.prose blockquote p {
+  margin: 0;
+}
+
+.prose code {
+  font-family: "DejaVu Sans Mono", ui-monospace, "SFMono-Regular", Menlo,
+    Consolas, monospace;
+  font-size: 0.88em;
+  padding: 0.15em 0.42em;
+  border-radius: 0.5em;
+  background: var(--cream-2);
+  color: var(--sakura-deep);
+  border: 1px solid var(--line);
+}
+
+.prose pre {
+  padding: 1.2rem 1.4rem;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  background: oklch(30% 0.03 285);
+  border: 1.5px solid var(--line-strong);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+}
+.prose pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  color: oklch(92% 0.02 300);
+}
+
+.prose img {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  margin-inline: auto;
+}
+
+.prose hr {
+  border: none;
+  height: 1.5rem;
+  margin-block: 2rem;
+  background: none;
+  text-align: center;
+}
+.prose hr::before {
+  content: "· ✿ ·";
+  color: var(--sakura);
+  letter-spacing: 0.4em;
+  font-size: 1.1rem;
+}

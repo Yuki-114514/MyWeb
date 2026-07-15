@@ -1,0 +1,54 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Avatar from "@/components/Avatar.astro";
+---
+
+<BaseLayout title="迷路了" description="这个页面好像走丢了。">
+  <section class="notfound container">
+    <div class="reveal">
+      <Avatar size={150} />
+    </div>
+    <p class="nf-code reveal" data-delay="1">4 · 0 · 4</p>
+    <h1 class="nf-title reveal" data-delay="1">诶呀，这页好像走丢了</h1>
+    <p class="nf-text reveal" data-delay="2">
+      它可能被风吹到别处去了，或者从来就不存在。<br />要不我们回首页，重新出发？
+    </p>
+    <div class="nf-actions reveal" data-delay="3">
+      <a href="/" class="btn btn--primary">← 回首页</a>
+      <a href="/blog" class="btn btn--ghost">去博客逛逛</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-block: clamp(3rem, 10vw, 7rem);
+  }
+  .nf-code {
+    margin-top: 1.5rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--sakura-deep);
+    font-size: var(--text-lg);
+  }
+  .nf-title {
+    font-size: var(--text-2xl);
+    margin-top: 0.5rem;
+  }
+  .nf-text {
+    color: var(--ink-soft);
+    margin-top: 0.9rem;
+  }
+  .nf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+    margin-top: 1.8rem;
+  }
+</style>
