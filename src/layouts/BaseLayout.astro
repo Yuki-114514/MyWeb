@@ -62,6 +62,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#fbe4ee" />
 
+    {/* 霞鹜文楷 Screen：CDN 按 unicode-range 切片，只下载当前页用到的字形 */}
+    <link rel="preconnect" href="https://fastly.jsdelivr.net" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fastly.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/lxgwwenkaiscreen.css"
+    />
+
     {
       /* Live2D 样式放进每页 SSR <head>，否则视图过渡换页时会被移除、看板娘变形 */
       theme.live2d && (

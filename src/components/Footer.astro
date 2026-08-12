@@ -1,6 +1,8 @@
 ---
 import { site } from "@/data/site";
 import SocialLinks from "./SocialLinks.astro";
+import Icon from "./Icon.astro";
+import SakuraMark from "./SakuraMark.astro";
 
 const year = 2024;
 ---
@@ -18,7 +20,7 @@ const year = 2024;
     <div class="footer-top">
       <div class="footer-brand">
         <p class="footer-name">
-          <span class="footer-mark" aria-hidden="true">✿</span>
+          <SakuraMark size="1.25em" class="footer-mark" />
           {site.name}
         </p>
         <p class="footer-tagline">{site.tagline}</p>
@@ -31,7 +33,7 @@ const year = 2024;
     <div class="footer-bottom">
       <SocialLinks />
       <p class="footer-copy">
-        © {year} {site.fullName} · 用 🌸 与 <a
+        © {year} {site.fullName} · 用 <Icon name="flower" class="copy-flower" /> 与 <a
           href="https://astro.build"
           class="link"
           target="_blank"
@@ -93,7 +95,7 @@ const year = 2024;
     font-size: var(--text-xl);
   }
   .footer-mark {
-    color: var(--sakura-deep);
+    vertical-align: -0.28em;
   }
   .footer-tagline {
     margin-top: 0.35rem;
@@ -127,6 +129,9 @@ const year = 2024;
   .footer-copy {
     color: var(--ink-faint);
     font-size: var(--text-sm);
+  }
+  .copy-flower {
+    color: var(--sakura-deep);
   }
 
   :global(html[data-theme="dark"]) .footer {

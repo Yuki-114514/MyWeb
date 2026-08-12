@@ -40,11 +40,15 @@
   --color-accent-2: var(--sky);
   --color-border: var(--line);
 
-  /* ---- Typography ---- */
-  --font-display: "Quicksand", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", "Source Han Sans SC", system-ui, sans-serif;
-  --font-body: "Nunito", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", "Source Han Sans SC", system-ui, sans-serif;
+  /* ---- Typography ----
+   * 拉丁字符用圆润的 Quicksand/Nunito，中文交给霞鹜文楷（CDN 切片，
+   * 见 BaseLayout 的 <link>），系统字体兜底。 */
+  --font-display: "Quicksand", "LXGW WenKai Screen", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", system-ui,
+    sans-serif;
+  --font-body: "Nunito", "LXGW WenKai Screen", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Source Han Sans SC", system-ui,
+    sans-serif;
 
   --text-xs: 0.78rem;
   --text-sm: 0.9rem;

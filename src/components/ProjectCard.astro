@@ -1,16 +1,17 @@
 ---
 import type { Project } from "@/data/projects";
+import Icon from "@/components/Icon.astro";
 
 interface Props {
   project: Project;
 }
 const { project } = Astro.props;
-const { title, description, tags, emoji, accent, url, repo, year } = project;
+const { title, description, tags, icon, accent, url, repo, year } = project;
 ---
 
 <article class:list={["proj card", `accent-${accent}`]}>
   <div class="proj-head">
-    <span class="proj-emoji" aria-hidden="true">{emoji}</span>
+    <span class="proj-icon" aria-hidden="true"><Icon name={icon} /></span>
     <span class="proj-year">{year}</span>
   </div>
 
@@ -97,18 +98,19 @@ const { title, description, tags, emoji, accent, url, repo, year } = project;
     justify-content: space-between;
     margin-bottom: 1rem;
   }
-  .proj-emoji {
+  .proj-icon {
     display: grid;
     place-items: center;
     width: 3.2rem;
     height: 3.2rem;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
+    color: var(--accent-deep);
     border-radius: var(--radius);
     background: var(--accent-soft);
     box-shadow: inset 0 0 0 1.5px oklch(100% 0 0 / 0.5);
     transition: transform var(--dur) var(--ease-soft);
   }
-  .proj:hover .proj-emoji {
+  .proj:hover .proj-icon {
     transform: rotate(-8deg) scale(1.08);
   }
   .proj-year {

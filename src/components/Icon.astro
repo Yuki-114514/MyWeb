@@ -1,0 +1,34 @@
+---
+/*
+ * Phosphor duotone 图标 —— 内联 SVG，零依赖。
+ * 颜色跟随 currentColor，默认 1em 随字号缩放。
+ * 图标数据在 src/data/icons.ts。
+ */
+import { ICONS } from "@/data/icons";
+import type { IconName } from "@/data/icons";
+
+interface Props {
+  name: IconName;
+  /** 数字视为 px；字符串原样使用，如 "1.4em" */
+  size?: number | string;
+  class?: string;
+}
+
+const { name, size, class: className } = Astro.props;
+const icon = ICONS[name];
+const dim =
+  size === undefined ? undefined : typeof size === "number" ? `${size}px` : size;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 256 256"
+  fill="currentColor"
+  class:list={["icon", className]}
+  style={dim ? { width: dim, height: dim } : undefined}
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d={icon.d} opacity="0.2" />
+  <path d={icon.m} />
+</svg>

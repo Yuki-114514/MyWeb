@@ -1,16 +1,19 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { formatDate } from "@/lib/format";
+import Icon from "@/components/Icon.astro";
 
 interface Props {
   post: CollectionEntry<"blog">;
 }
 const { post } = Astro.props;
-const { title, description, pubDate, tags, emoji } = post.data;
+const { title, description, pubDate, tags, icon } = post.data;
 ---
 
 <a href={`/blog/${post.id}`} class="post card">
-  <span class="post-emoji" aria-hidden="true">{emoji}</span>
+  <span class="post-icon" aria-hidden="true">
+    <Icon name={icon} />
+  </span>
   <div class="post-body">
     <div class="post-meta">
       <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
@@ -34,18 +37,19 @@ const { title, description, pubDate, tags, emoji } = post.data;
     border-color: var(--sakura);
     box-shadow: var(--shadow);
   }
-  .post-emoji {
+  .post-icon {
     flex-shrink: 0;
     display: grid;
     place-items: center;
     width: 3.2rem;
     height: 3.2rem;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
+    color: var(--sakura-deep);
     border-radius: var(--radius);
     background: linear-gradient(135deg, var(--sakura-soft), var(--sky-soft));
     transition: transform var(--dur) var(--ease-soft);
   }
-  .post:hover .post-emoji {
+  .post:hover .post-icon {
     transform: rotate(8deg) scale(1.08);
   }
 

@@ -1,5 +1,6 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+import { iconNames } from "@/data/icons";
 
 /*
  * 博客内容集合。
@@ -14,7 +15,7 @@ const blog = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
-    emoji: z.string().default("🌸"),
+    icon: z.enum(iconNames).default("flower"),
     draft: z.boolean().default(false),
   }),
 });

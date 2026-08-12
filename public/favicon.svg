@@ -4,17 +4,23 @@
       <stop offset="0" stop-color="#f7b8d2"/>
       <stop offset="1" stop-color="#c9b6f0"/>
     </linearGradient>
+    <!-- 单片樱花瓣：纤细和风形，尖端 V 形缺刻，与站内 SakuraMark 同一朵 -->
+    <path id="p" d="M 0 -0.5 C 3.4 -2.2, 5.8 -6.8, 5.5 -12 C 5.3 -16, 4 -19.6, 2.1 -20.8 C 1.5 -18.6, 0.7 -17.8, 0 -17.4 C -0.7 -17.8, -1.5 -18.6, -2.1 -20.8 C -4 -19.6, -5.3 -16, -5.5 -12 C -5.8 -6.8, -3.4 -2.2, 0 -0.5 Z"/>
   </defs>
   <rect width="64" height="64" rx="16" fill="#fff5fa"/>
-  <g fill="url(#g)">
-    <!-- 五片樱花瓣 -->
-    <g transform="translate(32 32)">
-      <path id="p" d="M0 -19 C 5 -12 5 -5 0 0 C -5 -5 -5 -12 0 -19 Z" transform="rotate(0)"/>
-      <use href="#p" transform="rotate(72)"/>
-      <use href="#p" transform="rotate(144)"/>
-      <use href="#p" transform="rotate(216)"/>
-      <use href="#p" transform="rotate(288)"/>
-    </g>
+  <g transform="translate(32 33) scale(0.92)" fill="url(#g)">
+    <use href="#p"/>
+    <use href="#p" transform="rotate(72)"/>
+    <use href="#p" transform="rotate(144)"/>
+    <use href="#p" transform="rotate(216)"/>
+    <use href="#p" transform="rotate(288)"/>
   </g>
-  <circle cx="32" cy="32" r="4.2" fill="#fff2b0"/>
+  <g transform="translate(32 33) scale(0.92)" fill="#fffdf7" opacity="0.95">
+    <circle r="2.6"/>
+    <circle cx="0" cy="-8" r="1.5"/>
+    <circle cx="7.6" cy="-2.5" r="1.5"/>
+    <circle cx="4.7" cy="6.5" r="1.5"/>
+    <circle cx="-4.7" cy="6.5" r="1.5"/>
+    <circle cx="-7.6" cy="-2.5" r="1.5"/>
+  </g>
 </svg>

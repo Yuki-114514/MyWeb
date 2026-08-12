@@ -3,7 +3,7 @@ title: 用 Astro 搭这个小站的一些心得
 description: 为什么个人网站我选了 Astro，以及它让我最省心的几个地方。
 pubDate: 2025-01-20
 tags: ["技术", "Astro", "前端"]
-emoji: "🚀"
+icon: "rocket"
 ---
 
 这个小站是用 [Astro](https://astro.build) 搭的。折腾过 Next.js、也写过纯手工 HTML 之后，个人网站这种场景，我最后还是回到了 Astro。

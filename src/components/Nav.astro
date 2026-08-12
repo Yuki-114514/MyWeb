@@ -1,5 +1,6 @@
 ---
 import { site } from "@/data/site";
+import SakuraMark from "@/components/SakuraMark.astro";
 
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isActive = (href: string) =>
@@ -9,7 +10,11 @@ const isActive = (href: string) =>
 <header class="nav-wrap">
   <nav class="nav container" aria-label="主导航">
     <a href="/" class="brand" aria-label={`${site.name} 首页`}>
-      <span class="brand-mark" aria-hidden="true">✿</span>
+      <span class="brand-mark" aria-hidden="true">
+        <SakuraMark size={30} class="brand-sakura" />
+        <span class="petal petal--a" />
+        <span class="petal petal--b" />
+      </span>
       <span class="brand-name">{site.name}</span>
     </a>
 
@@ -85,19 +90,67 @@ const isActive = (href: string) =>
     letter-spacing: -0.01em;
   }
   .brand-mark {
+    position: relative;
     display: grid;
     place-items: center;
     width: 2rem;
     height: 2rem;
-    border-radius: var(--radius-pill);
-    background: linear-gradient(135deg, var(--sakura), var(--lavender));
-    color: white;
-    font-size: 0.95rem;
-    box-shadow: 0 6px 14px -6px oklch(70% 0.13 350 / 0.7);
+  }
+  .brand-sakura {
     transition: transform var(--dur) var(--ease-soft);
   }
-  .brand:hover .brand-mark {
-    transform: rotate(90deg) scale(1.05);
+  .brand:hover .brand-sakura {
+    transform: rotate(72deg) scale(1.08);
+  }
+
+  /* 花吹雪：hover 品牌时飘落的小花瓣 */
+  .petal {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    width: 7px;
+    height: 5.5px;
+    border-radius: 62% 38% 55% 45%;
+    background: var(--sakura);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .petal--b {
+    width: 5.5px;
+    height: 4.5px;
+    background: var(--lavender);
+  }
+  .brand:hover .petal--a {
+    animation: petal-fall-a 1.7s ease-out infinite;
+  }
+  .brand:hover .petal--b {
+    animation: petal-fall-b 1.7s ease-out 0.3s infinite;
+  }
+  @keyframes petal-fall-a {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(0deg);
+    }
+    12% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-15px, 26px) rotate(-210deg);
+    }
+  }
+  @keyframes petal-fall-b {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(0deg);
+    }
+    15% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(13px, 24px) rotate(180deg);
+    }
   }
 
   .nav-links {

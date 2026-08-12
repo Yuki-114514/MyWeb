@@ -77,6 +77,24 @@ p {
   text-wrap: pretty;
 }
 
+/* 内联 duotone 图标：跟随字号与 currentColor */
+.icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
+}
+
+/* 定制樱花标志：默认跟随字号 */
+.sakura-mark {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.15em;
+  flex-shrink: 0;
+}
+
 /* ---------- Layout helpers ---------- */
 .container {
   width: 100%;

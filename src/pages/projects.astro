@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { projects } from "@/data/projects";
 import ProjectCard from "@/components/ProjectCard.astro";
+import Icon from "@/components/Icon.astro";
 
 const sorted = [...projects].sort((a, b) => b.year.localeCompare(a.year));
 ---
@@ -20,7 +21,7 @@ const sorted = [...projects].sort((a, b) => b.year.localeCompare(a.year));
     <div class="proj-grid">
       {
         projects.length === 0 ? (
-          <p class="empty">还没有项目，敬请期待呀 🌱</p>
+          <p class="empty">还没有项目，敬请期待呀 <Icon name="plant" /></p>
         ) : (
           sorted.map((p, i) => (
             <div class="reveal" data-delay={((i % 3) + 1) as 1 | 2 | 3}>

@@ -4,6 +4,7 @@ import { site } from "@/data/site";
 import Avatar from "@/components/Avatar.astro";
 import SocialLinks from "@/components/SocialLinks.astro";
 import SectionHeading from "@/components/SectionHeading.astro";
+import Icon from "@/components/Icon.astro";
 
 const accentClass: Record<string, string> = {
   sakura: "pill--pink",
@@ -71,7 +72,7 @@ const accentClass: Record<string, string> = {
 
     <!-- Contact -->
     <div class="contact reveal">
-      <h2 class="contact-title">找我玩 🐾</h2>
+      <h2 class="contact-title">找我玩 <Icon name="paw-print" class="paw" /></h2>
       <p class="contact-text">
         邮箱是 <a href={`mailto:${site.email}`} class="link">{site.email}</a>，
         或者在下面这些地方戳我～
@@ -200,6 +201,9 @@ const accentClass: Record<string, string> = {
   }
   .contact-title {
     font-size: var(--text-xl);
+  }
+  .paw {
+    color: var(--sakura-deep);
   }
   .contact-text {
     color: var(--ink-soft);

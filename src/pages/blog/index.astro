@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PostCard from "@/components/PostCard.astro";
+import Icon from "@/components/Icon.astro";
 
 const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -16,7 +17,7 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
       <span class="eyebrow">✦ Blog</span>
       <h1 class="page-title">碎碎念 &amp; 笔记本</h1>
       <p class="page-lede">
-        这里存着我想留久一点的文字——技术踩坑、生活小事、看番心得。想到什么写什么，随缘更新 🌷
+        这里存着我想留久一点的文字——技术踩坑、生活小事、看番心得。想到什么写什么，随缘更新。
       </p>
       {
         allTags.length > 0 && (
@@ -32,7 +33,9 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
     <div class="posts-list">
       {
         posts.length === 0 ? (
-          <p class="empty">还没有文章，第一篇正在酝酿中 ✍️</p>
+          <p class="empty">
+            还没有文章，第一篇正在酝酿中 <Icon name="feather" />
+          </p>
         ) : (
           posts.map((post, i) => (
             <div class="reveal" data-delay={((i % 3) + 1) as 1 | 2 | 3}>

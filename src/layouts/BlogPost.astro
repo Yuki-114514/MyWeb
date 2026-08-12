@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
+import Icon from "@/components/Icon.astro";
 import { formatDate, readingTime } from "@/lib/format";
 import "@/styles/prose.css";
 
@@ -8,7 +9,7 @@ interface Props {
   post: CollectionEntry<"blog">;
 }
 const { post } = Astro.props;
-const { title, description, pubDate, updatedDate, tags, emoji } = post.data;
+const { title, description, pubDate, updatedDate, tags, icon } = post.data;
 const mins = readingTime(post.body ?? "");
 ---
 
@@ -17,7 +18,7 @@ const mins = readingTime(post.body ?? "");
     <a href="/blog" class="back-link">← 回到博客</a>
 
     <header class="post-header reveal">
-      <span class="post-badge" aria-hidden="true">{emoji}</span>
+      <span class="post-badge" aria-hidden="true"><Icon name={icon} /></span>
       <div class="post-meta">
         <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
         <span class="dot" aria-hidden="true">·</span>
@@ -82,7 +83,8 @@ const mins = readingTime(post.body ?? "");
     place-items: center;
     width: 4.5rem;
     height: 4.5rem;
-    font-size: 2.3rem;
+    font-size: 2.4rem;
+    color: var(--sakura-deep);
     border-radius: var(--radius-lg);
     background: linear-gradient(135deg, var(--sakura-soft), var(--lavender) 180%);
     box-shadow: var(--shadow);
@@ -123,7 +125,6 @@ const mins = readingTime(post.body ?? "");
     margin-top: 2.5rem;
     color: var(--ink-faint);
     font-size: var(--text-sm);
-    font-style: italic;
   }
 
   .post-foot {
