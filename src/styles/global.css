@@ -17,6 +17,26 @@ html {
   scrollbar-color: var(--sakura) transparent;
 }
 
+/* WebKit (Chrome/Safari) 滚动条：细条 + 樱花渐变 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--sakura), var(--lavender));
+  border-radius: var(--radius-pill);
+  border: 2.5px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--sakura-deep), var(--lavender-deep));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
 body {
   min-height: 100dvh;
   font-family: var(--font-body);
@@ -222,6 +242,37 @@ p {
   box-shadow: var(--shadow);
   transition: transform var(--dur) var(--ease-soft),
     box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+/* hover 时一道柔光斜向掠过，强化玻璃质感 */
+.card {
+  overflow: hidden;
+}
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    oklch(100% 0 0 / 0.28) 48%,
+    transparent 64%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.9s var(--ease);
+  pointer-events: none;
+}
+.card:hover::after {
+  transform: translateX(130%);
+}
+:root[data-theme="dark"] .card::after {
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    oklch(100% 0 0 / 0.09) 48%,
+    transparent 64%
+  );
 }
 
 /* ---------- Link underline (wavy on hover) ---------- */

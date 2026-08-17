@@ -13,6 +13,18 @@ const petals = [
   { left: 72, size: 13, dur: 18, delay: 3, drift: 34, spin: 200, hue: 350 },
   { left: 88, size: 10, dur: 20, delay: 6, drift: -40, spin: -200, hue: 300 },
 ];
+
+// 深色模式下花瓣换成萤火虫（夜幕微光）
+const fireflies = [
+  { left: 10, top: 30, size: 5, dur: 9, delay: 0, dx: 46, dy: -30 },
+  { left: 22, top: 62, size: 4, dur: 11, delay: 2.5, dx: -38, dy: -44 },
+  { left: 36, top: 20, size: 6, dur: 10, delay: 1.2, dx: 52, dy: 36 },
+  { left: 52, top: 70, size: 4, dur: 12, delay: 4, dx: -44, dy: -36 },
+  { left: 64, top: 38, size: 5, dur: 9.5, delay: 0.8, dx: 40, dy: 42 },
+  { left: 78, top: 60, size: 6, dur: 11.5, delay: 3.2, dx: -50, dy: -28 },
+  { left: 90, top: 26, size: 4, dur: 10.5, delay: 5, dx: -34, dy: 40 },
+  { left: 45, top: 48, size: 3.5, dur: 13, delay: 6, dx: 36, dy: -46 },
+];
 ---
 
 <div
@@ -24,14 +36,24 @@ const petals = [
   <div class="wp-veil"></div>
   {
     theme.petals && (
-      <div class="petals">
-        {petals.map((p) => (
-          <span
-            class="petal"
-            style={`--left:${p.left}%;--s:${p.size}px;--dur:${p.dur}s;--delay:${p.delay}s;--drift:${p.drift}px;--spin:${p.spin}deg;--hue:${p.hue}`}
-          />
-        ))}
-      </div>
+      <>
+        <div class="petals">
+          {petals.map((p) => (
+            <span
+              class="petal"
+              style={`--left:${p.left}%;--s:${p.size}px;--dur:${p.dur}s;--delay:${p.delay}s;--drift:${p.drift}px;--spin:${p.spin}deg;--hue:${p.hue}`}
+            />
+          ))}
+        </div>
+        <div class="fireflies">
+          {fireflies.map((f) => (
+            <span
+              class="firefly"
+              style={`--left:${f.left}%;--top:${f.top}%;--s:${f.size}px;--dur:${f.dur}s;--delay:${f.delay}s;--dx:${f.dx}px;--dy:${f.dy}px`}
+            />
+          ))}
+        </div>
+      </>
     )
   }
 </div>
@@ -121,8 +143,53 @@ const petals = [
     }
   }
 
+  /* 萤火虫：只在深色模式出现，与花瓣互换 */
+  .fireflies {
+    display: none;
+    position: absolute;
+    inset: 0;
+  }
+  :global([data-theme="dark"]) .petals {
+    display: none;
+  }
+  :global([data-theme="dark"]) .fireflies {
+    display: block;
+  }
+  .firefly {
+    position: absolute;
+    left: var(--left);
+    top: var(--top);
+    width: var(--s);
+    height: var(--s);
+    border-radius: 50%;
+    background: oklch(93% 0.1 100 / 0.95);
+    box-shadow:
+      0 0 8px 2px oklch(88% 0.12 100 / 0.55),
+      0 0 20px 6px oklch(85% 0.1 95 / 0.25);
+    opacity: 0;
+    animation: glow var(--dur) ease-in-out var(--delay) infinite;
+  }
+  @keyframes glow {
+    0%,
+    100% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 0.9;
+    }
+    50% {
+      transform: translate(var(--dx), var(--dy));
+      opacity: 0.35;
+    }
+    80% {
+      opacity: 0.9;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .petals {
+    .petals,
+    .fireflies {
       display: none;
     }
   }

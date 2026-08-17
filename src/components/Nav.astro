@@ -11,7 +11,7 @@ const isActive = (href: string) =>
   <nav class="nav container" aria-label="主导航">
     <a href="/" class="brand" aria-label={`${site.name} 首页`}>
       <span class="brand-mark" aria-hidden="true">
-        <SakuraMark size={30} class="brand-sakura" />
+        <SakuraMark size={38} class="brand-sakura" />
         <span class="petal petal--a" />
         <span class="petal petal--b" />
       </span>
@@ -93,14 +93,17 @@ const isActive = (href: string) =>
     position: relative;
     display: grid;
     place-items: center;
-    width: 2rem;
-    height: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-block: -0.25rem; /* 花朵高于文字行，但不撑高导航 */
   }
   .brand-sakura {
+    /* 静态微倾：花不端端正正，更自然 */
+    transform: rotate(-9deg);
     transition: transform var(--dur) var(--ease-soft);
   }
   .brand:hover .brand-sakura {
-    transform: rotate(72deg) scale(1.08);
+    transform: rotate(63deg) scale(1.06);
   }
 
   /* 花吹雪：hover 品牌时飘落的小花瓣 */

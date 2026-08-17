@@ -71,27 +71,29 @@ const roles: { icon: IconName; label: string }[] = [
     </div>
 
     <div class="hero-visual reveal" data-delay="2">
-      <span class="deco deco--star1" aria-hidden="true">✦</span>
-      <span class="deco deco--star2" aria-hidden="true">✧</span>
-      <Icon name="flower" class="deco deco--heart" />
-      {
-        theme.heroCharacter ? (
-          <figure class="char-frame">
-            <img
-              class="char-img"
-              src={theme.heroCharacter}
-              alt="角色立绘"
-              loading="eager"
-            />
-            <figcaption class="char-tag">◍ 我的搭子</figcaption>
-          </figure>
-        ) : (
-          <div class="halo-wrap">
-            <div class="halo-ring" aria-hidden="true" />
-            <Avatar size={210} />
-          </div>
-        )
-      }
+      <div class="tilt">
+        <span class="deco deco--star1" aria-hidden="true">✦</span>
+        <span class="deco deco--star2" aria-hidden="true">✧</span>
+        <Icon name="flower" class="deco deco--heart" />
+        {
+          theme.heroCharacter ? (
+            <figure class="char-frame">
+              <img
+                class="char-img"
+                src={theme.heroCharacter}
+                alt="角色立绘"
+                loading="eager"
+              />
+              <figcaption class="char-tag">◍ 我的搭子</figcaption>
+            </figure>
+          ) : (
+            <div class="halo-wrap">
+              <div class="halo-ring" aria-hidden="true" />
+              <Avatar size={210} />
+            </div>
+          )
+        }
+      </div>
     </div>
   </section>
 
@@ -162,6 +164,29 @@ const roles: { icon: IconName; label: string }[] = [
   }
   loadHitokoto();
   document.addEventListener("astro:page-load", loadHitokoto);
+
+  // Hero 立绘 / 头像随鼠标轻微 3D 倾斜（触屏与减弱动效时关闭）
+  function initTilt() {
+    const visual = document.querySelector<HTMLElement>(".hero-visual");
+    const tilt = visual?.querySelector<HTMLElement>(".tilt");
+    if (!visual || !tilt) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    const MAX = 7; // 最大倾角（度）
+    visual.addEventListener("mousemove", (e) => {
+      const r = visual.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      tilt.style.setProperty("--ry", `${(px * MAX * 2).toFixed(2)}deg`);
+      tilt.style.setProperty("--rx", `${(-py * MAX * 2).toFixed(2)}deg`);
+    });
+    visual.addEventListener("mouseleave", () => {
+      tilt.style.setProperty("--rx", "0deg");
+      tilt.style.setProperty("--ry", "0deg");
+    });
+  }
+  initTilt();
+  document.addEventListener("astro:page-load", initTilt);
 </script>
 
 <style>
@@ -280,6 +305,17 @@ const roles: { icon: IconName; label: string }[] = [
     display: grid;
     place-items: center;
     min-height: 320px;
+    perspective: 800px;
+  }
+  /* 鼠标视差倾斜层：包住立绘与装饰，角度由 JS 写入 --rx/--ry */
+  .tilt {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.3s var(--ease);
+    will-change: transform;
   }
   .halo-ring {
     position: absolute;

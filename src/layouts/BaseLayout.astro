@@ -60,7 +60,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
     <meta name="author" content={site.fullName} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#fbe4ee" />
+    {/* theme-color 跟随系统深/浅色；JS 初始化后会用精确计算色覆盖 */}
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbe4ee" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#262130" />
 
     {/* 霞鹜文楷 Screen：CDN 按 unicode-range 切片，只下载当前页用到的字形 */}
     <link rel="preconnect" href="https://fastly.jsdelivr.net" crossorigin />
@@ -136,6 +138,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
         document
           .querySelectorAll("[data-theme-toggle]")
           .forEach((b) => b.setAttribute("aria-pressed", String(t === "dark")));
+        // 用实际的页面底色精确同步浏览器 UI 颜色
+        const syncMeta = () => {
+          const bg = getComputedStyle(document.body).backgroundColor;
+          if (bg) {
+            document
+              .querySelectorAll('meta[name="theme-color"]')
+              .forEach((m) => m.setAttribute("content", bg));
+          }
+        };
+        syncMeta();
+        // body 背景有 0.38s 过渡，切换主题时再取一次过渡结束后的终值
+        setTimeout(syncMeta, 450);
       }
       function themeApply(t: string) {
         document.documentElement.dataset.theme = t;
