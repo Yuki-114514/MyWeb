@@ -24,27 +24,37 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
   </ul>
 
   <div class="mp-main">
-    <button class="mp-cover" data-act="toggle" aria-label="播放 / 暂停" title="播放 / 暂停">
-      <img class="mp-cover-img" alt="" />
+    <button
+      class="mp-cover"
+      data-act="toggle"
+      aria-label="播放 / 暂停"
+      title="播放 / 暂停（拖动可挪动位置）"
+    >
+      <img class="mp-cover-img" alt="" draggable="false" />
       <span class="mp-cover-note" aria-hidden="true">♪</span>
     </button>
 
-    <div class="mp-info">
-      <div class="mp-title">暂未播放</div>
-      <div class="mp-artist">点击封面开始</div>
-      <div class="mp-bar" role="slider" aria-label="进度" tabindex="0">
-        <div class="mp-fill"></div>
-      </div>
-      <div class="mp-time">0:00</div>
-    </div>
+    {/* 默认收起为一枚唱片；悬停 / 聚焦时向右滑出 */}
+    <div class="mp-detail">
+      <div class="mp-detail-inner">
+        <div class="mp-info">
+          <div class="mp-title">暂未播放</div>
+          <div class="mp-artist">点击封面开始</div>
+          <div class="mp-bar" role="slider" aria-label="进度" tabindex="0">
+            <div class="mp-fill"></div>
+          </div>
+          <div class="mp-time">0:00</div>
+        </div>
 
-    <div class="mp-controls">
-      <button data-act="prev" aria-label="上一首" title="上一首">⏮</button>
-      <button data-act="play" class="mp-play" aria-label="播放 / 暂停" title="播放 / 暂停">
-        <span class="mp-icon">▶</span>
-      </button>
-      <button data-act="next" aria-label="下一首" title="下一首">⏭</button>
-      <button data-act="list" aria-label="播放列表" title="播放列表">☰</button>
+        <div class="mp-controls">
+          <button data-act="prev" aria-label="上一首" title="上一首">⏮</button>
+          <button data-act="play" class="mp-play" aria-label="播放 / 暂停" title="播放 / 暂停">
+            <span class="mp-icon">▶</span>
+          </button>
+          <button data-act="next" aria-label="下一首" title="下一首">⏭</button>
+          <button data-act="list" aria-label="播放列表" title="播放列表">☰</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -67,6 +77,7 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
     if (!tracks.length) return;
 
     const audio = q<HTMLAudioElement>("audio");
+    const cover = q<HTMLElement>(".mp-cover");
     const coverImg = q<HTMLImageElement>(".mp-cover-img");
     const titleEl = q<HTMLElement>(".mp-title");
     const artistEl = q<HTMLElement>(".mp-artist");
@@ -105,7 +116,13 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
     }
 
     const toggle = () => (audio.paused ? audio.play() : audio.pause());
-    q(".mp-cover").addEventListener("click", toggle);
+    cover.addEventListener("click", () => {
+      if (skipClick) {
+        skipClick = false; // 拖拽结束后的那次 click 不触发播放
+        return;
+      }
+      toggle();
+    });
     q('[data-act="play"]').addEventListener("click", toggle);
     q('[data-act="prev"]').addEventListener("click", () => load(idx - 1, true));
     q('[data-act="next"]').addEventListener("click", () => load(idx + 1, true));
@@ -143,6 +160,82 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
       }
     });
 
+    // ---- 唱片可自由拖动，位置记忆在 localStorage ----
+    const POS_KEY = "mp-pos";
+    const EDGE = 8; // 与屏幕边缘的最小间距
+    let grabX = 0;
+    let grabY = 0;
+    let downX = 0;
+    let downY = 0;
+    let moved = false;
+    let skipClick = false;
+
+    // 以封面为基准定位根元素；封面越过屏幕中线时翻转向左展开
+    function place(cx: number, cy: number) {
+      const cw = cover.offsetWidth;
+      const ch = cover.offsetHeight;
+      cx = Math.max(EDGE, Math.min(window.innerWidth - cw - EDGE, cx));
+      cy = Math.max(EDGE, Math.min(window.innerHeight - ch - EDGE, cy));
+      root.classList.toggle("flip", cx + cw / 2 > window.innerWidth / 2);
+      const rr = root.getBoundingClientRect();
+      const cr = cover.getBoundingClientRect();
+      root.style.left = cx - (cr.left - rr.left) + "px";
+      root.style.top = cy - (cr.top - rr.top) + "px";
+      root.style.bottom = "auto";
+    }
+
+    function savePos() {
+      const cr = cover.getBoundingClientRect();
+      try {
+        localStorage.setItem(POS_KEY, JSON.stringify({ x: cr.left, y: cr.top }));
+      } catch {}
+    }
+
+    function restorePos() {
+      try {
+        const p = JSON.parse(localStorage.getItem(POS_KEY) || "null");
+        if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) place(p.x, p.y);
+      } catch {}
+    }
+
+    cover.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      skipClick = false; // 上次拖拽若没落到封面上的 click，不吞这次的播放
+      const cr = cover.getBoundingClientRect();
+      grabX = e.clientX - cr.left;
+      grabY = e.clientY - cr.top;
+      downX = e.clientX;
+      downY = e.clientY;
+      moved = false;
+      cover.setPointerCapture(e.pointerId);
+    });
+    cover.addEventListener("pointermove", (e) => {
+      if (!cover.hasPointerCapture(e.pointerId)) return;
+      if (!moved) {
+        if (Math.hypot(e.clientX - downX, e.clientY - downY) < 6) return;
+        moved = true;
+        root.classList.add("drag");
+      }
+      place(e.clientX - grabX, e.clientY - grabY);
+    });
+    const endDrag = (e: PointerEvent) => {
+      if (!cover.hasPointerCapture(e.pointerId)) return;
+      cover.releasePointerCapture(e.pointerId);
+      if (moved) {
+        savePos();
+        skipClick = true;
+      }
+      moved = false;
+      root.classList.remove("drag");
+    };
+    cover.addEventListener("pointerup", endDrag);
+    cover.addEventListener("pointercancel", endDrag);
+    window.addEventListener("resize", () => {
+      const cr = cover.getBoundingClientRect();
+      place(cr.left, cr.top);
+    });
+    restorePos();
+
     load(0, data.autoplay);
   }
 
@@ -156,22 +249,81 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
     left: 1.2rem;
     bottom: 1.2rem;
     z-index: 45;
-    width: min(330px, calc(100vw - 2rem));
+    width: fit-content;
+    pointer-events: none; /* 收起的歌单弹层是隐形的，不挡页面点击 */
     font-family: var(--font-display);
     color: var(--ink);
   }
 
   .mp-main {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    width: fit-content; /* 不随歌单弹层撑宽，收起时只剩一枚唱片 */
     padding: 0.6rem;
     border-radius: var(--radius-lg);
+    pointer-events: auto;
+  }
+
+  /* 玻璃底只在展开时淡入：收起态是裸唱片 */
+  .mp-main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
     background: oklch(99.5% 0.004 95 / 0.7);
     backdrop-filter: blur(16px) saturate(1.5);
     -webkit-backdrop-filter: blur(16px) saturate(1.5);
     border: 1.5px solid oklch(100% 0 0 / 0.65);
     box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transition: opacity 0.35s var(--ease);
+  }
+  /* 只有悬停 / 聚焦唱片本体，或歌单打开时才亮玻璃 */
+  .mplayer:not(.drag) .mp-main:is(:hover, :focus-within)::before,
+  .mplayer.open .mp-main::before {
+    opacity: 1;
+    transition-delay: 0.08s; /* 宽度先开始展开，玻璃随后淡入 */
+  }
+
+  /* 收起态：宽度 0、透明；只有鼠标在唱片上才滑出详情 */
+  .mp-detail {
+    width: 0;
+    margin: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      width 0.55s var(--ease),
+      margin 0.55s var(--ease),
+      opacity 0.3s var(--ease);
+  }
+  .mp-detail-inner {
+    width: 15.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .mplayer:not(.drag) .mp-main:is(:hover, :focus-within) .mp-detail,
+  .mplayer.open .mp-detail {
+    width: 15.5rem;
+    margin-left: 0.7rem;
+    opacity: 1;
+    transition:
+      width 0.55s var(--ease),
+      margin 0.55s var(--ease),
+      opacity 0.35s var(--ease) 0.12s;
+  }
+
+  /* 唱片拖到屏幕右半：详情改向左侧展开，避免溢出 */
+  .mplayer.flip .mp-main {
+    margin-left: auto;
+    flex-direction: row-reverse;
+  }
+  .mplayer.flip:not(.drag) .mp-main:is(:hover, :focus-within) .mp-detail,
+  .mplayer.flip.open .mp-detail {
+    margin-left: 0;
+    margin-right: 0.7rem;
   }
 
   /* 封面唱片 */
@@ -188,6 +340,17 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
       var(--shadow-sm);
     display: grid;
     place-items: center;
+    cursor: grab;
+    touch-action: none; /* 触屏拖动时不滚页面 */
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .mp-cover-img,
+  .mp-cover-note {
+    -webkit-user-drag: none; /* 防止封面图触发浏览器原生拖图，抢走指针 */
+  }
+  .mplayer.drag .mp-cover {
+    cursor: grabbing;
   }
   .mp-cover-img {
     position: absolute;
@@ -283,10 +446,13 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
   /* 歌单弹层 */
   .mp-list {
     list-style: none;
+    width: min(330px, calc(100vw - 2.4rem));
     margin: 0 0 0.5rem;
     padding: 0.4rem;
     max-height: 0;
     opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
     overflow: hidden auto;
     border-radius: var(--radius-lg);
     background: oklch(99.5% 0.004 95 / 0.78);
@@ -297,11 +463,14 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
     transition:
       max-height var(--dur) var(--ease),
       opacity var(--dur) var(--ease),
-      transform var(--dur) var(--ease);
+      transform var(--dur) var(--ease),
+      visibility var(--dur);
   }
   .mplayer.open .mp-list {
     max-height: 240px;
     opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
     transform: none;
     border-color: oklch(100% 0 0 / 0.65);
     box-shadow: var(--shadow-lg);
@@ -382,7 +551,13 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
     .mplayer {
       left: 0.75rem;
       bottom: 0.75rem;
-      width: calc(100vw - 1.5rem);
+    }
+    .mp-detail-inner {
+      width: min(15.5rem, calc(100vw - 7.3rem));
+    }
+    .mplayer:not(.drag) .mp-main:is(:hover, :focus-within) .mp-detail,
+    .mplayer.open .mp-detail {
+      width: min(15.5rem, calc(100vw - 7.3rem));
     }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -390,14 +565,18 @@ const data = { tracks: music.tracks, autoplay: music.autoplay };
     .mp-track-eq i {
       animation: none;
     }
+    .mp-detail,
+    .mp-main::before {
+      transition: none;
+    }
   }
 
   /* 深色玻璃播放器 */
-  :global(html[data-theme="dark"]) .mp-main,
+  :global(html[data-theme="dark"]) .mp-main::before,
   :global(html[data-theme="dark"]) .mp-list {
     background: oklch(28% 0.03 290 / 0.74);
   }
-  :global(html[data-theme="dark"]) .mp-main {
+  :global(html[data-theme="dark"]) .mp-main::before {
     border-color: oklch(80% 0.02 300 / 0.16);
   }
   :global(html[data-theme="dark"]) .mplayer.open .mp-list {

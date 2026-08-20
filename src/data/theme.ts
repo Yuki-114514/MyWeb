@@ -39,5 +39,5 @@ export const theme = {
   petals: true,
 
   /** 右下角 Live2D 看板娘（会从 CDN 加载，手机端自动不显示）。 */
-  live2d: true,
+  live2d: false,
 } as const;
