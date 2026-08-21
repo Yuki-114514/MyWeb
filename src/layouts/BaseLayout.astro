@@ -22,15 +22,40 @@ interface Props {
   description?: string;
   /** 页面主色，用于视觉小差异（暂未强用，保留扩展） */
   ogType?: string;
+  /** 文章页传进来，用于输出 BlogPosting 结构化数据 */
+  jsonLd?: Record<string, unknown>;
 }
 const {
   title,
   description = site.intro,
   ogType = "website",
+  jsonLd,
 } = Astro.props;
 
 const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.role}`;
-const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
+const origin = Astro.site ?? new URL(site.url);
+const canonical = new URL(Astro.url.pathname, origin).href;
+
+// 有分享图才输出 og:image；没有就把 twitter:card 降级成 summary，
+// 否则 summary_large_image 会渲染成一张空白大卡
+const ogImage = theme.ogImage ? new URL(theme.ogImage, origin).href : null;
+
+// 只有真正填了的外部主页才进 sameAs（RSS / mailto 不算）
+const sameAs = site.social
+  .filter((s) => s.url.startsWith("http"))
+  .map((s) => s.url);
+
+const structuredData = jsonLd ?? {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.fullName,
+  alternateName: site.name,
+  description: site.intro,
+  url: origin.href,
+  jobTitle: site.role,
+  ...(site.email ? { email: `mailto:${site.email}` } : {}),
+  ...(sameAs.length ? { sameAs } : {}),
+};
 ---
 
 <!doctype html>
@@ -41,6 +66,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
     <meta name="color-scheme" content="light dark" />
     <script is:inline>
       document.documentElement.classList.add("js");
+      // 兜底：.js .reveal 是 opacity:0，取消隐藏的代码在打包后的 module 里。
+      // 万一那个 bundle 加载失败 / astro:page-load 没触发，整页会永远空白，
+      // 所以这里留一个 2.5s 的保险丝，到点就把内容无条件放出来。
+      setTimeout(function () {
+        document.documentElement.classList.add("reveal-fallback");
+      }, 2500);
       // 首屏前就定好主题，避免闪白
       (function () {
         try {
@@ -82,13 +113,31 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
       )
     }
 
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${site.name} 的博客`}
+      href={new URL("/rss.xml", origin).href}
+    />
+
     <!-- Open Graph -->
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={site.name} />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:locale" content="zh_CN" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta
+      name="twitter:card"
+      content={ogImage ? "summary_large_image" : "summary"}
+    />
+
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(structuredData)}
+    />
 
     <ClientRouter />
   </head>
@@ -186,7 +235,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
         padding: 0.6rem 1.2rem;
         border-radius: var(--radius-pill);
         background: var(--sakura-deep);
-        color: white;
+        color: var(--btn-ink);
         font-family: var(--font-display);
         font-weight: 700;
         font-size: var(--text-sm);
