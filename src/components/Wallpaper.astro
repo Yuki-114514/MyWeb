@@ -30,7 +30,7 @@ const fireflies = [
 <div
   class="wallpaper"
   aria-hidden="true"
-  style={`--wp:url('${theme.wallpaper}');--wp-m:url('${wpMobile}');--ov:${theme.overlay};--blur:${theme.wallpaperBlur}px`}
+  style={`--wp:url('${theme.wallpaper}');--wp-m:url('${wpMobile}');--ov:${theme.overlay};--ov-dark:${theme.overlayDark};--blur:${theme.wallpaperBlur}px`}
 >
   {hasWp ? <div class="wp-img"></div> : <div class="wp-fallback"></div>}
   <div class="wp-veil"></div>
@@ -98,6 +98,10 @@ const fireflies = [
       var(--veil-c)
     );
     transition: background 0.38s var(--ease);
+  }
+  /* 深色模式单独一档浓度，见 theme.ts 的 overlayDark */
+  :global([data-theme="dark"]) .wp-veil {
+    opacity: var(--ov-dark);
   }
 
   @media (max-width: 640px) {

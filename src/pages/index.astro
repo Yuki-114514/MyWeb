@@ -28,18 +28,18 @@ const roles: { icon: IconName; label: string }[] = [
   <!-- ============ HERO ============ -->
   <section class="hero container" aria-labelledby="hero-heading">
     <div class="hero-text">
-      <p class="hero-hello reveal">
+      <p class="hero-hello rise">
         <Icon name="hand-waving" class="wave" /> 你好呀，欢迎来到我的小站
       </p>
-      <h1 id="hero-heading" class="hero-h1 reveal" data-delay="1">
+      <h1 id="hero-heading" class="hero-h1 rise" data-delay="1">
         我是 <span class="name">{site.name}</span>，<br />{site.role}。
       </h1>
-      <p class="hero-tagline reveal" data-delay="2">{site.tagline}</p>
-      <p class="hero-intro reveal" data-delay="2">{site.intro}</p>
+      <p class="hero-tagline rise" data-delay="2">{site.tagline}</p>
+      <p class="hero-intro rise" data-delay="2">{site.intro}</p>
 
       {
         theme.hitokoto && (
-          <p class="hero-hitokoto reveal" data-delay="2">
+          <p class="hero-hitokoto rise" data-delay="2">
             <span class="hk-mark" aria-hidden="true">
               ❞
             </span>
@@ -48,7 +48,7 @@ const roles: { icon: IconName; label: string }[] = [
         )
       }
 
-      <ul class="hero-roles reveal" data-delay="3">
+      <ul class="hero-roles rise" data-delay="3">
         {
           roles.map((r) => (
             <li class="pill pill--pink">
@@ -59,18 +59,18 @@ const roles: { icon: IconName; label: string }[] = [
         }
       </ul>
 
-      <div class="hero-actions reveal" data-delay="3">
+      <div class="hero-actions rise" data-delay="3">
         <a href="/projects" class="btn btn--primary">看看项目 ✦</a>
         <a href="/blog" class="btn btn--ghost">读读博客</a>
       </div>
 
-      <div class="hero-social reveal" data-delay="4">
+      <div class="hero-social rise" data-delay="4">
         <span class="hero-social-label">在这些地方找到我 →</span>
         <SocialLinks />
       </div>
     </div>
 
-    <div class="hero-visual reveal" data-delay="2">
+    <div class="hero-visual rise" data-delay="2">
       <div class="tilt">
         <span class="deco deco--star1" aria-hidden="true">✦</span>
         <span class="deco deco--star2" aria-hidden="true">✧</span>
@@ -143,9 +143,17 @@ const roles: { icon: IconName; label: string }[] = [
       <p class="cta-text">
         无论是合作、约稿，还是单纯想打个招呼——都欢迎来找我呀。
       </p>
-      <a href={`mailto:${site.email}`} class="btn btn--primary">
-        给我写封信 <Icon name="paper-plane-tilt" />
-      </a>
+      {
+        site.email ? (
+          <a href={`mailto:${site.email}`} class="btn btn--primary">
+            给我写封信 <Icon name="paper-plane-tilt" />
+          </a>
+        ) : (
+          <div class="cta-social">
+            <SocialLinks />
+          </div>
+        )
+      }
     </div>
   </section>
 </BaseLayout>
@@ -162,7 +170,8 @@ const roles: { icon: IconName; label: string }[] = [
       })
       .catch(() => {});
   }
-  loadHitokoto();
+  // 只挂监听，不在顶层再调一次 —— astro:page-load 首次加载时也会触发，
+  // 两处都写会让首屏发出两个 hitokoto 请求（实测确实是 2 条）
   document.addEventListener("astro:page-load", loadHitokoto);
 
   // Hero 立绘 / 头像随鼠标轻微 3D 倾斜（触屏与减弱动效时关闭）
@@ -185,7 +194,7 @@ const roles: { icon: IconName; label: string }[] = [
       tilt.style.setProperty("--ry", "0deg");
     });
   }
-  initTilt();
+  // 同上：顶层再调一次会给 .hero-visual 重复绑两套 mousemove / mouseleave
   document.addEventListener("astro:page-load", initTilt);
 </script>
 
@@ -235,6 +244,15 @@ const roles: { icon: IconName; label: string }[] = [
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    /*
+     * background-clip:text 的字里 text-shadow 会画在渐变「上面」，
+     * 把颜色洗白，所以这里必须关掉，改用 filter: drop-shadow —— 
+     * 它作用在渲染结果外侧，衬底效果一样但不会盖住渐变。
+     */
+    text-shadow: none;
+    filter:
+      drop-shadow(0 0 2px var(--hero-halo))
+      drop-shadow(0 0 8px var(--hero-halo));
   }
   .hero-tagline {
     margin-top: 1.2rem;
@@ -291,12 +309,17 @@ const roles: { icon: IconName; label: string }[] = [
     color: var(--sakura);
   }
 
-  /* 壁纸之上保证文字清晰（光晕随主题切换） */
+  /* 壁纸之上保证文字清晰（光晕随主题切换，叠三层当局部遮罩） */
   .hero-h1,
   .hero-tagline,
   .hero-intro,
-  .hero-hitokoto {
-    text-shadow: 0 1px 16px var(--hero-halo);
+  .hero-hitokoto,
+  .hero-social-label {
+    text-shadow:
+      0 0 2px var(--hero-halo),
+      0 0 4px var(--hero-halo),
+      0 0 12px var(--hero-halo),
+      0 1px 26px var(--hero-halo);
   }
 
   /* ---------- Hero visual ---------- */
@@ -442,6 +465,10 @@ const roles: { icon: IconName; label: string }[] = [
     margin: 0.8rem auto 1.6rem;
     color: var(--ink-soft);
   }
+  .cta-social {
+    display: flex;
+    justify-content: center;
+  }
   :global(html[data-theme="dark"]) .cta {
     background:
       radial-gradient(120% 120% at 50% 0%, oklch(55% 0.1 350 / 0.32), transparent 62%),
@@ -454,9 +481,22 @@ const roles: { icon: IconName; label: string }[] = [
       grid-template-columns: 1fr;
       text-align: center;
     }
+    /*
+     * .tilt 原本是 absolute inset:0，但 .char-frame 有 380px 高，
+     * 撑不开 min-height:260px 的父级 —— 立绘会上下各溢出几十像素，
+     * 正好盖住下面那颗「你好呀」胶囊。窄屏改回正常流，让父级跟着长。
+     */
     .hero-visual {
       order: -1;
-      min-height: 260px;
+      min-height: 0;
+    }
+    .tilt {
+      position: relative;
+      inset: auto;
+    }
+    /* 星星和小花本来是浮在立绘四周的，回到正常流后会压在立绘上，收起来 */
+    .deco {
+      display: none;
     }
     .hero-hello,
     .hero-roles,
