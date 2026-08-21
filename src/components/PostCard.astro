@@ -5,9 +5,12 @@ import Icon from "@/components/Icon.astro";
 
 interface Props {
   post: CollectionEntry<"blog">;
+  /** 卡片标题的层级。列表页父级只有 h1 时传 2，首页有 SectionHeading(h2) 时用默认的 3 */
+  headingLevel?: 2 | 3;
 }
-const { post } = Astro.props;
+const { post, headingLevel = 3 } = Astro.props;
 const { title, description, pubDate, tags, icon } = post.data;
+const Title = `h${headingLevel}` as "h2" | "h3";
 ---
 
 <a href={`/blog/${post.id}`} class="post card">
@@ -19,7 +22,7 @@ const { title, description, pubDate, tags, icon } = post.data;
       <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
       {tags[0] && <span class="post-tag">#{tags[0]}</span>}
     </div>
-    <h3 class="post-title">{title}</h3>
+    <Title class="post-title">{title}</Title>
     <p class="post-desc">{description}</p>
   </div>
   <span class="post-arrow" aria-hidden="true">→</span>

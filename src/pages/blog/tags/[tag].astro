@@ -1,0 +1,71 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostList from "@/components/PostList.astro";
+import TagRow from "@/components/TagRow.astro";
+import { getSortedPosts, collectTags } from "@/lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getSortedPosts();
+  const tags = collectTags(posts);
+  return tags.map(({ tag }) => ({
+    params: { tag },
+    props: {
+      tag,
+      tags,
+      posts: posts.filter((p) => p.data.tags.includes(tag)),
+    },
+  }));
+}
+
+const { tag, tags, posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`#${tag}`}
+  description={`标签「${tag}」下的 ${posts.length} 篇文章。`}
+>
+  <section class="container container-narrow">
+    <header class="page-head rise">
+      <a href="/blog" class="back-link">← 回到博客</a>
+      <span class="eyebrow">✦ Tag</span>
+      <h1 class="page-title">#{tag}</h1>
+      <p class="page-lede">这个标签下有 {posts.length} 篇文章。</p>
+      <TagRow tags={tags} active={tag} showCount class="head-tags" />
+    </header>
+
+    <PostList posts={posts} emptyText="这个标签下还没有文章" />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    margin-bottom: 3rem;
+    padding-top: 2rem;
+  }
+  .back-link {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    min-height: 2.75rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+    transition: color var(--dur) var(--ease);
+  }
+  .back-link:hover {
+    color: var(--sakura-deep);
+  }
+  .page-title {
+    font-size: var(--text-2xl);
+    margin-top: 0.6rem;
+    margin-bottom: 0.9rem;
+  }
+  .page-lede {
+    color: var(--ink-soft);
+    font-size: var(--text-lg);
+  }
+  .head-tags {
+    margin-top: 1.5rem;
+  }
+</style>

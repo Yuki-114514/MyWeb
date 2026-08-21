@@ -1,19 +1,25 @@
 ---
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import BlogPost from "@/layouts/BlogPost.astro";
+import { getSortedPosts } from "@/lib/posts";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog", ({ data }) => !data.draft);
-  return posts.map((post) => ({
+  const posts = await getSortedPosts();
+  return posts.map((post, i) => ({
     params: { slug: post.id },
-    props: { post },
+    props: {
+      post,
+      // 列表是按时间倒序的，所以「上一篇（更早）」在数组后面
+      newer: posts[i - 1] ?? null,
+      older: posts[i + 1] ?? null,
+    },
   }));
 }
 
-const { post } = Astro.props;
+const { post, newer, older } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BlogPost post={post}>
+<BlogPost post={post} newer={newer} older={older}>
   <Content />
 </BlogPost>

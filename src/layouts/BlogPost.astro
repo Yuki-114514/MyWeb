@@ -1,23 +1,48 @@
 ---
-import type { CollectionEntry } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
 import Icon from "@/components/Icon.astro";
+import TagRow from "@/components/TagRow.astro";
 import { formatDate, readingTime } from "@/lib/format";
+import { site } from "@/data/site";
+import type { Post } from "@/lib/posts";
 import "@/styles/prose.css";
 
 interface Props {
-  post: CollectionEntry<"blog">;
+  post: Post;
+  /** 更新的一篇（时间上更近） */
+  newer?: Post | null;
+  /** 更旧的一篇 */
+  older?: Post | null;
 }
-const { post } = Astro.props;
+const { post, newer = null, older = null } = Astro.props;
 const { title, description, pubDate, updatedDate, tags, icon } = post.data;
 const mins = readingTime(post.body ?? "");
+
+const origin = Astro.site ?? new URL(site.url);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  ...(updatedDate ? { dateModified: updatedDate.toISOString() } : {}),
+  keywords: [...tags],
+  inLanguage: "zh-CN",
+  mainEntityOfPage: new URL(`/blog/${post.id}`, origin).href,
+  author: { "@type": "Person", name: site.fullName, url: origin.href },
+};
 ---
 
-<BaseLayout title={title} description={description} ogType="article">
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="article"
+  jsonLd={jsonLd}
+>
   <article class="post-page container container-narrow">
     <a href="/blog" class="back-link">← 回到博客</a>
 
-    <header class="post-header reveal">
+    <header class="post-header rise">
       <span class="post-badge" aria-hidden="true"><Icon name={icon} /></span>
       <div class="post-meta">
         <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
@@ -26,15 +51,7 @@ const mins = readingTime(post.body ?? "");
       </div>
       <h1 class="post-h1">{title}</h1>
       <p class="post-lede">{description}</p>
-      {
-        tags.length > 0 && (
-          <ul class="post-tags">
-            {tags.map((t) => (
-              <li class="pill pill--pink">#{t}</li>
-            ))}
-          </ul>
-        )
-      }
+      {tags.length > 0 && <TagRow tags={[...tags]} class="post-tags" />}
     </header>
 
     <div class="prose reveal" data-delay="1">
@@ -44,6 +61,33 @@ const mins = readingTime(post.body ?? "");
     {
       updatedDate && (
         <p class="updated">最后更新于 {formatDate(updatedDate)}</p>
+      )
+    }
+
+    {
+      (older || newer) && (
+        <nav class="post-nav" aria-label="上一篇 / 下一篇">
+          {older ? (
+            <a href={`/blog/${older.id}`} class="post-nav-link" rel="prev">
+              <span class="post-nav-label">← 上一篇</span>
+              <span class="post-nav-title">{older.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {newer ? (
+            <a
+              href={`/blog/${newer.id}`}
+              class="post-nav-link post-nav-link--next"
+              rel="next"
+            >
+              <span class="post-nav-label">下一篇 →</span>
+              <span class="post-nav-title">{newer.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+        </nav>
       )
     }
 
@@ -112,13 +156,58 @@ const mins = readingTime(post.body ?? "");
     margin-inline: auto;
   }
   .post-tags {
-    display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    gap: 0.5rem;
-    list-style: none;
-    padding: 0;
     margin-top: 1.4rem;
+  }
+
+  .post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3.5rem;
+  }
+  .post-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 1rem 1.2rem;
+    border-radius: var(--radius);
+    background: var(--glass-bg);
+    border: 1.5px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    transition:
+      transform var(--dur) var(--ease-soft),
+      border-color var(--dur) var(--ease);
+  }
+  .post-nav-link:hover {
+    transform: translateY(-3px);
+    border-color: var(--sakura);
+  }
+  .post-nav-link--next {
+    text-align: right;
+  }
+  .post-nav-label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-xs);
+    color: var(--sakura-deep);
+  }
+  .post-nav-title {
+    font-size: var(--text-sm);
+    color: var(--ink-soft);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  @media (max-width: 34rem) {
+    .post-nav {
+      grid-template-columns: 1fr;
+    }
+    .post-nav-link--next {
+      text-align: left;
+    }
   }
 
   .updated {

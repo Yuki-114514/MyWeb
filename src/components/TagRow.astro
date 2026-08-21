@@ -1,0 +1,55 @@
+---
+import { tagHref } from "@/lib/posts";
+
+interface Props {
+  tags: { tag: string; count: number }[] | string[];
+  /** 当前所在的标签，会高亮 */
+  active?: string;
+  showCount?: boolean;
+  class?: string;
+}
+const { tags, active, showCount = false, class: className = "" } = Astro.props;
+const list = tags.map((t) =>
+  typeof t === "string" ? { tag: t, count: 0 } : t,
+);
+---
+
+<ul class:list={["tag-row", className]}>
+  {
+    list.map(({ tag, count }) => (
+      <li>
+        <a
+          href={tagHref(tag)}
+          class:list={["pill tag-pill", { "pill--pink": tag === active }]}
+          aria-current={tag === active ? "page" : undefined}
+        >
+          #{tag}
+          {showCount && count > 0 && <span class="tag-count">{count}</span>}
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .tag-pill {
+    /* 触摸目标：胶囊本身偏矮，用上下 padding 撑到 44px */
+    min-height: 2.75rem;
+  }
+  .tag-pill:hover {
+    color: var(--sakura-deep);
+    transform: translateY(-2px);
+  }
+  .tag-count {
+    font-size: var(--text-xs);
+    color: var(--ink-faint);
+  }
+</style>

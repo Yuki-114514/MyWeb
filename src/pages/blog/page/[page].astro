@@ -1,0 +1,55 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PostList from "@/components/PostList.astro";
+import { getSortedPosts, PAGE_SIZE, totalPages } from "@/lib/posts";
+
+/* 第 1 页是 /blog（见 blog/index.astro），这里只生成第 2 页往后 */
+export async function getStaticPaths() {
+  const posts = await getSortedPosts();
+  const pages = totalPages(posts.length);
+  return Array.from({ length: Math.max(0, pages - 1) }, (_, i) => {
+    const page = i + 2;
+    return {
+      params: { page: String(page) },
+      props: {
+        page,
+        pages,
+        posts: posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+      },
+    };
+  });
+}
+
+const { page, pages, posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`博客 · 第 ${page} 页`}
+  description="技术笔记、生活随想，和一些软软的碎碎念。"
+>
+  <section class="container container-narrow">
+    <header class="page-head rise">
+      <span class="eyebrow">✦ Blog</span>
+      <h1 class="page-title">碎碎念 &amp; 笔记本</h1>
+      <p class="page-lede">第 {page} 页，共 {pages} 页。</p>
+    </header>
+
+    <PostList posts={posts} page={page} pages={pages} />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    margin-bottom: 3rem;
+    padding-top: 2rem;
+  }
+  .page-title {
+    font-size: var(--text-2xl);
+    margin-top: 0.6rem;
+    margin-bottom: 0.9rem;
+  }
+  .page-lede {
+    color: var(--ink-soft);
+    font-size: var(--text-lg);
+  }
+</style>
