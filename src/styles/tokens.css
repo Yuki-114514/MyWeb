@@ -11,20 +11,25 @@
   --paper: oklch(99.5% 0.004 95);        /* card surface */
 
   --sakura: oklch(84% 0.083 350);        /* signature pink */
-  --sakura-soft: oklch(93% 0.045 350);
-  --sakura-deep: oklch(70% 0.13 356);
+  --sakura-soft: oklch(95.5% 0.042 350);
+  --sakura-deep: oklch(54.5% 0.13 356);
   --sky: oklch(85% 0.073 232);           /* soft blue */
-  --sky-soft: oklch(94% 0.035 232);
-  --sky-deep: oklch(69% 0.11 236);
+  --sky-soft: oklch(95.5% 0.036 232);
+  --sky-deep: oklch(53% 0.11 236);
   --mint: oklch(88% 0.076 168);          /* soft green */
-  --mint-deep: oklch(70% 0.1 168);
+  --mint-soft: oklch(95.5% 0.038 168);
+  --mint-deep: oklch(52.5% 0.1 168);
   --lavender: oklch(84% 0.072 300);      /* soft purple */
-  --lavender-deep: oklch(68% 0.12 300);
+  --lavender-soft: oklch(95.5% 0.036 300);
+  --lavender-deep: oklch(54.5% 0.12 300);
   --lemon: oklch(93% 0.085 102);         /* soft yellow, used sparingly */
 
+  /* 主按钮上的字：浅色底用白，深色底翻成深墨（白字在提亮后的强调色上只有 1.85:1） */
+  --btn-ink: oklch(100% 0 0);
+
   --ink: oklch(39% 0.032 288);           /* primary text — soft plum-slate */
-  --ink-soft: oklch(55% 0.028 288);      /* secondary text */
-  --ink-faint: oklch(70% 0.02 288);      /* tertiary text / captions */
+  --ink-soft: oklch(50% 0.028 288);      /* secondary text */
+  --ink-faint: oklch(56% 0.02 288);      /* tertiary text / captions */
   --line: oklch(91% 0.016 320);          /* hairline borders */
   --line-strong: oklch(86% 0.024 330);
 
@@ -104,8 +109,8 @@
   --veil-a: oklch(98.5% 0.012 95);
   --veil-b: oklch(98% 0.014 330);
   --veil-c: oklch(97.5% 0.016 250);
-  /* soft shadow used behind hero text over the wallpaper */
-  --hero-halo: oklch(99% 0.008 95 / 0.55);
+  /* 直接压在壁纸上的文字的贴身衬底，见 global.css 的 .halo 叠法 */
+  --hero-halo: oklch(99% 0.008 95 / 0.95);
 
   color-scheme: light;
 
@@ -142,6 +147,10 @@
   /* 柔色背景改为深色半透明染色 */
   --sakura-soft: oklch(52% 0.1 350 / 0.24);
   --sky-soft: oklch(52% 0.09 232 / 0.24);
+  --mint-soft: oklch(52% 0.09 168 / 0.24);
+  --lavender-soft: oklch(52% 0.09 300 / 0.24);
+
+  --btn-ink: oklch(23% 0.028 285);
 
   --glass-bg: oklch(30% 0.03 290 / 0.42);
   --glass-bg-strong: oklch(30% 0.032 290 / 0.6);
@@ -150,7 +159,7 @@
   --veil-a: oklch(21% 0.03 285);
   --veil-b: oklch(17.5% 0.03 292);
   --veil-c: oklch(20% 0.035 255);
-  --hero-halo: oklch(14% 0.02 285 / 0.6);
+  --hero-halo: oklch(13% 0.02 285 / 0.95);
 
   color-scheme: dark;
 }

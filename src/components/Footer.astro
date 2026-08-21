@@ -4,7 +4,7 @@ import SocialLinks from "./SocialLinks.astro";
 import Icon from "./Icon.astro";
 import SakuraMark from "./SakuraMark.astro";
 
-const year = 2024;
+const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
@@ -105,12 +105,18 @@ const year = 2024;
   .footer-nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.1rem;
+    align-items: center;
+    gap: 0.2rem 0.4rem;
     font-family: var(--font-display);
     font-weight: 600;
     font-size: var(--text-sm);
   }
   .footer-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: 0.6rem;
+    border-radius: var(--radius-pill);
     color: var(--ink-soft);
     transition: color var(--dur) var(--ease);
   }
@@ -132,6 +138,13 @@ const year = 2024;
   }
   .copy-flower {
     color: var(--sakura-deep);
+  }
+
+  /* 窄屏给固定定位的唱片留出落脚处，别压住页脚最后一行 */
+  @media (max-width: 52rem) {
+    .footer {
+      padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    }
   }
 
   :global(html[data-theme="dark"]) .footer {

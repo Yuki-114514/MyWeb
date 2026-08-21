@@ -148,6 +148,36 @@ p {
   color: var(--sakura-deep);
 }
 
+/* ---------- 壁纸上的文字 ---------- *
+ * 壁纸是随机图，亮暗不可控，整体遮罩救不回来：实测最坏情况下
+ * 深色模式 3.67:1、浅色模式 --ink-soft 只有 1.99:1，而把遮罩加到
+ * 0.76 仍然只有 3.16:1 —— 再加壁纸就没了。
+ *
+ * 所以改成给文字本身叠一层贴身衬底：前两层小半径高不透明度，
+ * 紧贴字形形成实底（对比度变成「字 vs 衬底色」而不是「字 vs 壁纸」）；
+ * 后两层大半径做柔光过渡，保住通透感。
+ * 长文另有 .prose 的玻璃底兜着，那里是真正要读的地方。
+ */
+.eyebrow,
+.page-title,
+.page-lede,
+.heading-title,
+.post-h1,
+.post-lede,
+.post-meta,
+.about-title,
+.about-sub,
+.nf-code,
+.nf-title,
+.nf-text,
+.more-row {
+  text-shadow:
+    0 0 2px var(--hero-halo),
+    0 0 4px var(--hero-halo),
+    0 0 12px var(--hero-halo),
+    0 1px 26px var(--hero-halo);
+}
+
 /* ---------- Pills / tags ---------- */
 .pill {
   display: inline-flex;
@@ -178,12 +208,12 @@ p {
 }
 .pill--mint {
   color: var(--mint-deep);
-  background: oklch(95% 0.04 168);
+  background: var(--mint-soft);
   border-color: transparent;
 }
 .pill--lav {
   color: var(--lavender-deep);
-  background: oklch(95% 0.035 300);
+  background: var(--lavender-soft);
   border-color: transparent;
 }
 
@@ -205,7 +235,7 @@ p {
 }
 
 .btn--primary {
-  color: white;
+  color: var(--btn-ink);
   background: linear-gradient(135deg, var(--sakura-deep), var(--lavender-deep));
   box-shadow: 0 12px 26px -12px oklch(70% 0.13 350 / 0.6);
 }
@@ -292,6 +322,7 @@ p {
 
 /* ---------- Scroll reveal ---------- *
  * Only hide when JS is available (html.js), so no-JS users still see content.
+ * 只给首屏以下的内容用 —— 首屏请用下面的 .rise，否则 LCP 会被 JS 卡住。
  */
 .js .reveal {
   opacity: 0;
@@ -302,6 +333,28 @@ p {
 .js .reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+/* 保险丝：JS bundle 挂了 / astro:page-load 没触发时，2.5s 后无条件显示 */
+.js.reveal-fallback .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 首屏入场 ---------- *
+ * 只动 transform，不碰 opacity：元素从第一帧就是「已绘制」的，
+ * LCP 立刻成立，不依赖任何 JS。视觉上仍然是轻轻托上来的效果。
+ */
+.rise {
+  animation: rise var(--dur-slow) var(--ease) backwards;
+}
+.rise[data-delay="1"] { animation-delay: 90ms; }
+.rise[data-delay="2"] { animation-delay: 180ms; }
+.rise[data-delay="3"] { animation-delay: 270ms; }
+.rise[data-delay="4"] { animation-delay: 360ms; }
+@keyframes rise {
+  from {
+    transform: translateY(18px);
+  }
 }
 .js .reveal[data-delay="1"] {
   transition-delay: 90ms;

@@ -3,6 +3,19 @@
   font-size: var(--text-lg);
   line-height: var(--leading-relaxed);
   color: var(--ink);
+
+  /*
+   * 长文是全站唯一需要「确定底色」的地方：壁纸是随机图，
+   * 光晕描边撑得住标题，撑不住几百字的正文。这里给一块玻璃底，
+   * 和关于页 .bio 是同一套做法。
+   */
+  padding: clamp(1.4rem, 4vw, 2.4rem);
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.4);
+  border: 1.5px solid var(--glass-border);
+  box-shadow: var(--shadow);
 }
 
 .prose > * + * {
@@ -117,7 +130,6 @@
   padding: 1.2rem 1.4rem;
   border-radius: var(--radius);
   overflow-x: auto;
-  background: oklch(30% 0.03 285);
   border: 1.5px solid var(--line-strong);
   box-shadow: var(--shadow-sm);
   font-size: var(--text-sm);
@@ -127,7 +139,22 @@
   padding: 0;
   background: none;
   border: none;
-  color: oklch(92% 0.02 300);
+}
+
+/*
+ * Shiki 双主题（astro.config.mjs 里 defaultColor: false）：
+ * 每个 token 上带 --shiki-light / --shiki-dark 两组变量，这里选用哪一组。
+ * 之前写死的 background 会被 Shiki 的内联 style 盖掉，根本不生效。
+ */
+.prose .astro-code,
+.prose .astro-code span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+:root[data-theme="dark"] .prose .astro-code,
+:root[data-theme="dark"] .prose .astro-code span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
 }
 
 .prose img {

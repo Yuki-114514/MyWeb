@@ -83,6 +83,7 @@ const isActive = (href: string) =>
   .brand {
     display: inline-flex;
     align-items: center;
+    min-height: 2.75rem;
     gap: 0.5rem;
     font-family: var(--font-display);
     font-weight: 700;
@@ -169,13 +170,17 @@ const isActive = (href: string) =>
     box-shadow: var(--shadow-sm);
   }
   .nav-link {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
     padding: 0.4rem clamp(0.6rem, 2.4vw, 1rem);
     border-radius: var(--radius-pill);
     font-family: var(--font-display);
     font-weight: 600;
     font-size: var(--text-sm);
     color: var(--ink-soft);
+    /* 中文标签绝不能从中间断开（原来窄屏会变成「首/页」两行） */
+    white-space: nowrap;
     transition:
       color var(--dur) var(--ease),
       background var(--dur) var(--ease);
@@ -196,8 +201,9 @@ const isActive = (href: string) =>
   .theme-toggle {
     display: grid;
     place-items: center;
-    width: 2.4rem;
-    height: 2.4rem;
+    /* 2.75rem = 44px，指尖接触面的量级 */
+    width: 2.75rem;
+    height: 2.75rem;
     flex-shrink: 0;
     border-radius: var(--radius-pill);
     color: var(--ink-soft);
@@ -225,6 +231,39 @@ const isActive = (href: string) =>
   }
   :global(html[data-theme="dark"]) .ico-sun {
     display: block;
+  }
+
+  /*
+   * 窄屏：藏起品牌文字（樱花标还在，仍然是回首页的链接），
+   * 把省下来的宽度让给四个导航项，这样它们能待在一行里。
+   * 375px 实测：品牌 40 + 导航 200 + 主题键 38 + 间距 ≈ 相当宽裕。
+   */
+  @media (max-width: 30rem) {
+    .nav {
+      gap: 0.5rem;
+    }
+    .brand-name {
+      display: none;
+    }
+    .nav-right {
+      gap: 0.4rem;
+    }
+    /* 品牌只剩樱花标，宽度补到 44 */
+    .brand {
+      min-width: 2.75rem;
+      justify-content: center;
+    }
+    .nav-links {
+      gap: 0.1rem;
+      padding: 0.15rem;
+    }
+    .nav-link {
+      padding: 0.45rem 0.55rem;
+    }
+    /* 命中区撑到 44 后导航会变高，内边距收一收，整体落在 ~64px */
+    .nav-wrap {
+      padding-block: 0.35rem;
+    }
   }
 
   /* 深色下的导航玻璃 */

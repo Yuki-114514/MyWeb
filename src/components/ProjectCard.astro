@@ -4,9 +4,13 @@ import Icon from "@/components/Icon.astro";
 
 interface Props {
   project: Project;
+  /** 卡片标题的层级。列表页父级只有 h1 时传 2，首页有 SectionHeading(h2) 时用默认的 3 */
+  headingLevel?: 2 | 3;
 }
-const { project } = Astro.props;
+const { project, headingLevel = 3 } = Astro.props;
 const { title, description, tags, icon, accent, url, repo, year } = project;
+const Title = `h${headingLevel}` as "h2" | "h3";
+const hasLinks = Boolean(url || repo);
 ---
 
 <article class:list={["proj card", `accent-${accent}`]}>
@@ -15,29 +19,34 @@ const { title, description, tags, icon, accent, url, repo, year } = project;
     <span class="proj-year">{year}</span>
   </div>
 
-  <h3 class="proj-title">{title}</h3>
+  <Title class="proj-title">{title}</Title>
   <p class="proj-desc">{description}</p>
 
   <ul class="proj-tags">
     {tags.map((t) => <li class="proj-tag">{t}</li>)}
   </ul>
 
-  <div class="proj-links">
-    {
-      url && (
-        <a href={url} target="_blank" rel="noopener" class="proj-link">
-          去看看 <span aria-hidden="true">↗</span>
-        </a>
-      )
-    }
-    {
-      repo && (
-        <a href={repo} target="_blank" rel="noopener" class="proj-link ghost">
-          源码
-        </a>
-      )
-    }
-  </div>
+  {
+    hasLinks && (
+      <div class="proj-links">
+        {url && (
+          <a href={url} target="_blank" rel="noopener noreferrer" class="proj-link">
+            去看看 <span aria-hidden="true">↗</span>
+          </a>
+        )}
+        {repo && (
+          <a
+            href={repo}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="proj-link ghost"
+          >
+            源码
+          </a>
+        )}
+      </div>
+    )
+  }
 </article>
 
 <style>
@@ -84,12 +93,12 @@ const { title, description, tags, icon, accent, url, repo, year } = project;
   .accent-mint {
     --accent: var(--mint);
     --accent-deep: var(--mint-deep);
-    --accent-soft: oklch(95% 0.04 168);
+    --accent-soft: var(--mint-soft);
   }
   .accent-lavender {
     --accent: var(--lavender);
     --accent-deep: var(--lavender-deep);
-    --accent-soft: oklch(95% 0.035 300);
+    --accent-soft: var(--lavender-soft);
   }
 
   .proj-head {
@@ -155,17 +164,33 @@ const { title, description, tags, icon, accent, url, repo, year } = project;
 
   .proj-links {
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: 0.4rem;
     margin-top: 1.2rem;
-    padding-top: 1.1rem;
+    padding-top: 0.5rem;
     border-top: 1.5px dashed var(--line);
   }
   .proj-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    /* 命中区 44×44：min-height 管高，min-width 保「源码」这种两字链接不至于太窄 */
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    padding-inline: 0.5rem;
+    border-radius: var(--radius-pill);
     font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--text-sm);
     color: var(--accent-deep);
-    transition: gap var(--dur) var(--ease);
+    transition: background var(--dur) var(--ease);
+  }
+  /* 首个链接的内边距往回收，文字仍与卡片其余内容左对齐 */
+  .proj-links > :first-child {
+    margin-left: -0.5rem;
+  }
+  .proj-link:hover {
+    background: var(--accent-soft);
   }
   .proj-link.ghost {
     color: var(--ink-faint);
