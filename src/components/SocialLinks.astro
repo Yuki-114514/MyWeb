@@ -28,7 +28,7 @@ const icons: Record<string, string> = {
           class="social"
           aria-label={s.name}
           title={s.name}
-          rel="me noopener"
+          rel={s.url.startsWith("http") ? "me noopener noreferrer" : undefined}
           target={s.url.startsWith("http") ? "_blank" : undefined}
         >
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">

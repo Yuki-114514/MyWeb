@@ -30,8 +30,8 @@ export const projects: Project[] = [
     tags: ["React", "TypeScript", "PWA"],
     icon: "list-heart",
     accent: "sakura",
-    url: "https://example.com",
-    repo: "https://github.com/",
+    url: "", // TODO: 线上地址，留空则不显示「去看看」
+    repo: "", // TODO: 源码地址，留空则不显示「源码」
     year: "2024",
     featured: true,
   },
@@ -42,7 +42,7 @@ export const projects: Project[] = [
     tags: ["Astro", "Canvas", "API"],
     icon: "cloud-sun",
     accent: "sky",
-    url: "https://example.com",
+    url: "", // TODO: 线上地址，留空则不显示「去看看」
     year: "2024",
     featured: true,
   },
@@ -53,7 +53,7 @@ export const projects: Project[] = [
     tags: ["Vue", "Node.js"],
     icon: "cooking-pot",
     accent: "mint",
-    repo: "https://github.com/",
+    repo: "", // TODO: 源码地址，留空则不显示「源码」
     year: "2023",
     featured: true,
   },
@@ -64,7 +64,7 @@ export const projects: Project[] = [
     tags: ["TypeScript", "Canvas", "IndexedDB"],
     icon: "plant",
     accent: "lavender",
-    url: "https://example.com",
+    url: "", // TODO: 线上地址，留空则不显示「去看看」
     year: "2023",
     featured: true,
   },
@@ -75,7 +75,7 @@ export const projects: Project[] = [
     tags: ["React", "SVG", "打印"],
     icon: "pencil-ruler",
     accent: "sakura",
-    repo: "https://github.com/",
+    repo: "", // TODO: 源码地址，留空则不显示「源码」
     year: "2022",
   },
   {
@@ -85,7 +85,7 @@ export const projects: Project[] = [
     tags: ["Next.js", "PostgreSQL"],
     icon: "television",
     accent: "sky",
-    url: "https://example.com",
+    url: "", // TODO: 线上地址，留空则不显示「去看看」
     year: "2022",
   },
 ];

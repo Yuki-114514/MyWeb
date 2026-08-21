@@ -15,8 +15,15 @@ export const theme = {
   /** 手机竖屏壁纸，留空则和上面共用。 */
   wallpaperMobile: "https://t.alcy.cc/mp",
 
-  /** 背景遮罩浓度 0~1：越大文字越清晰、壁纸越淡（小清新建议 0.5~0.7）。 */
+  /** 浅色模式的背景遮罩浓度 0~1：越大文字越清晰、壁纸越淡（小清新建议 0.5~0.7）。 */
   overlay: 0.6,
+  /*
+   * 深色模式单独一档。深色下正文是浅色字，抽到一张亮壁纸时最容易糊掉，
+   * 所以默认压得比浅色更狠。注意：遮罩再浓也保证不了任意壁纸下的对比度
+   * （纯白区域算下来最多 3:1 左右），所以正文另外走 .prose 的玻璃底 +
+   * 标题的光晕描边，这里只负责整体压暗。
+   */
+  overlayDark: 0.78,
   /** 壁纸柔化模糊(px)：让背景更梦幻、内容更聚焦。0 为不模糊。 */
   wallpaperBlur: 2,
 
@@ -31,6 +38,13 @@ export const theme = {
    * 放自己的：public/avatar.jpg → "/avatar.jpg"
    */
   avatar: "https://t.alcy.cc/mp",
+
+  /*
+   * 社交分享卡片图（OG image），建议 1200×630。
+   * 放 public/og.png → 填 "/og.png"。留空则不输出 og:image，
+   * 同时 twitter:card 自动降级成 summary（避免出现空白大卡）。
+   */
+  ogImage: "",
 
   /** 首页是否显示「一言」随机句子（hitokoto API）。 */
   hitokoto: true,

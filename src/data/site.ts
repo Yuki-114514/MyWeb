@@ -2,6 +2,23 @@
  * 站点中心配置 —— 想改名字、简介、链接、导航，都在这里改一处即可。
  */
 
+/*
+ * ⚠️ 部署前必填 ⚠️
+ * 下面几项留空时，对应的图标 / 按钮不会渲染出来，
+ * 所以线上不会出现「点了没反应」的死链接。填一项就多出一项。
+ * 站点域名不在这里 —— 在 astro.config.mjs 顶部的 SITE_URL。
+ */
+export const profile = {
+  /** GitHub 用户名，例如 "yuki"（不要带 https://） */
+  github: "Yuki-114514",
+  /** X / Twitter 用户名，例如 "yuki"（不要带 @） */
+  twitter: "",
+  /** Bilibili 空间 UID，例如 "12345678" */
+  bilibili: "3546698731227302",
+  /** 联系邮箱，例如 "yuki@example.com" */
+  email: "ducphungduong498@gmail.com",
+} as const;
+
 export interface SocialLink {
   name: string;
   url: string;
@@ -25,6 +42,31 @@ export interface TimelineItem {
   desc: string;
 }
 
+/** 只保留 profile 里真正填了的那几个 */
+const social: SocialLink[] = [
+  profile.github && {
+    name: "GitHub",
+    url: `https://github.com/${profile.github}`,
+    icon: "github",
+  },
+  profile.twitter && {
+    name: "Twitter",
+    url: `https://twitter.com/${profile.twitter}`,
+    icon: "twitter",
+  },
+  profile.bilibili && {
+    name: "Bilibili",
+    url: `https://space.bilibili.com/${profile.bilibili}`,
+    icon: "bilibili",
+  },
+  profile.email && {
+    name: "邮箱",
+    url: `mailto:${profile.email}`,
+    icon: "mail",
+  },
+  { name: "RSS", url: "/rss.xml", icon: "rss" },
+].filter((s): s is SocialLink => Boolean(s));
+
 export const site = {
   /** 用于 <title> 和 SEO 的站点名 */
   name: "Yuki",
@@ -43,17 +85,12 @@ export const site = {
     "我着迷于「小而美」的软件——那些界面干净、用起来顺手、还带点温度的小工具。比起把功能堆满，我更愿意花时间把一个细节打磨到刚刚好。",
     "写博客是我整理思绪的方式。技术笔记、生活随想、看番心得，什么都写一点。如果哪篇碰巧帮到了你，那就太好啦。",
   ],
-  email: "hello@example.com",
+  email: profile.email,
   location: "地球某处 · UTC+8",
-  /** 部署后换成你的真实域名 */
-  url: "https://example.com",
+  /** 由 astro.config.mjs 的 SITE_URL 注入，不要在这里改 */
+  url: import.meta.env.SITE ?? "http://localhost:4321",
 
-  social: [
-    { name: "GitHub", url: "https://github.com/", icon: "github" },
-    { name: "Twitter", url: "https://twitter.com/", icon: "twitter" },
-    { name: "Bilibili", url: "https://space.bilibili.com/", icon: "bilibili" },
-    { name: "邮箱", url: "mailto:hello@example.com", icon: "mail" },
-  ] as SocialLink[],
+  social,
 
   nav: [
     { label: "首页", href: "/" },

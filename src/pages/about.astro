@@ -17,7 +17,7 @@ const accentClass: Record<string, string> = {
 <BaseLayout title="关于" description={site.intro}>
   <section class="container container-narrow">
     <!-- Intro -->
-    <header class="about-head reveal">
+    <header class="about-head rise">
       <div class="about-avatar">
         <Avatar size={132} />
       </div>
@@ -28,7 +28,7 @@ const accentClass: Record<string, string> = {
       </div>
     </header>
 
-    <div class="bio reveal" data-delay="1">
+    <div class="bio rise" data-delay="1">
       {site.about.map((para) => <p>{para}</p>)}
     </div>
 
@@ -74,8 +74,18 @@ const accentClass: Record<string, string> = {
     <div class="contact reveal">
       <h2 class="contact-title">找我玩 <Icon name="paw-print" class="paw" /></h2>
       <p class="contact-text">
-        邮箱是 <a href={`mailto:${site.email}`} class="link">{site.email}</a>，
-        或者在下面这些地方戳我～
+        {
+          site.email && (
+            <Fragment>
+              邮箱是{" "}
+              <a href={`mailto:${site.email}`} class="link">
+                {site.email}
+              </a>
+              ，
+            </Fragment>
+          )
+        }
+        {site.email ? "或者在下面这些地方戳我～" : "在下面这些地方都能戳到我～"}
       </p>
       <SocialLinks class="contact-social" />
     </div>
