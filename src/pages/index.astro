@@ -98,42 +98,50 @@ const roles: { icon: IconName; label: string }[] = [
   </section>
 
   <!-- ============ FEATURED PROJECTS ============ -->
-  <section class="section container" aria-labelledby="proj-heading">
-    <div class="reveal">
-      <SectionHeading eyebrow="Made with love" title="精选作品" />
-    </div>
-    <div class="proj-grid">
-      {
-        featured.map((p, i) => (
-          <div class="reveal" data-delay={((i % 3) + 1) as 1 | 2 | 3}>
-            <ProjectCard project={p} />
-          </div>
-        ))
-      }
-    </div>
-    <div class="more-row reveal">
-      <a href="/projects" class="link">查看全部项目 →</a>
-    </div>
-  </section>
+  {
+    featured.length > 0 && (
+    <section class="section container" aria-labelledby="proj-heading">
+      <div class="reveal">
+        <SectionHeading eyebrow="Made with love" title="精选作品" />
+      </div>
+      <div class="proj-grid">
+        {
+          featured.map((p, i) => (
+            <div class="reveal" data-delay={((i % 3) + 1) as 1 | 2 | 3}>
+              <ProjectCard project={p} />
+            </div>
+          ))
+        }
+      </div>
+      <div class="more-row reveal">
+        <a href="/projects" class="link">查看全部项目 →</a>
+      </div>
+    </section>
+    )
+  }
 
   <!-- ============ RECENT WRITING ============ -->
-  <section class="section container container-narrow" aria-labelledby="posts-heading">
-    <div class="reveal">
-      <SectionHeading eyebrow="From the blog" title="最近写的字" align="center" />
-    </div>
-    <div class="posts-list">
-      {
-        posts.map((post, i) => (
-          <div class="reveal" data-delay={((i % 3) + 1) as 1 | 2 | 3}>
-            <PostCard post={post} />
-          </div>
-        ))
-      }
-    </div>
-    <div class="more-row reveal" style="text-align:center">
-      <a href="/blog" class="link">翻翻更多文章 →</a>
-    </div>
-  </section>
+  {
+    posts.length > 0 && (
+    <section class="section container container-narrow" aria-labelledby="posts-heading">
+      <div class="reveal">
+        <SectionHeading eyebrow="From the blog" title="最近写的字" align="center" />
+      </div>
+      <div class="posts-list">
+        {
+          posts.map((post, i) => (
+            <div class="reveal" data-delay={((i % 3) + 1) as 1 | 2 | 3}>
+              <PostCard post={post} />
+            </div>
+          ))
+        }
+      </div>
+      <div class="more-row reveal" style="text-align:center">
+        <a href="/blog" class="link">翻翻更多文章 →</a>
+      </div>
+    </section>
+    )
+  }
 
   <!-- ============ CLOSING CTA ============ -->
   <section class="container">
@@ -234,10 +242,17 @@ const roles: { icon: IconName; label: string }[] = [
     20% { transform: rotate(-10deg); }
   }
 
+  /* --text-hero 用 cqi，这里给它一个「栏」作为参照 */
+  .hero-text {
+    container-type: inline-size;
+  }
   .hero-h1 {
     font-size: var(--text-hero);
     margin-top: 1.3rem;
     line-height: 1.08;
+    /* CJK 默认逐字断行，会把「写作者。」拆成「写作」+「者。」；
+       keep-all 只允许在空格/「·」处换行，词内不再拆开 */
+    word-break: keep-all;
   }
   .name {
     background: linear-gradient(120deg, var(--sakura-deep), var(--lavender-deep) 60%, var(--sky-deep));
