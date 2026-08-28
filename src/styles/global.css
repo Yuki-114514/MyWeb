@@ -97,6 +97,26 @@ p {
   text-wrap: pretty;
 }
 
+/* 中文的换行兜底 —— 集中在这里，别再散到各组件里。
+   text-wrap: pretty 的孤词判定基于「词」，而中文逐字都是断点，
+   末行只剩「我呀。」也不算孤词，所以对中文近乎空转（实测与 normal 同结果）。
+   balance 按行长均分，与语言无关，因此窄栏里的短文本一律用它。
+   注意：Chrome 只对 ≤4 行生效，超过会自动退回 normal，长正文加了也无害但无用，
+   所以文章正文（.prose）不在此列。新增短文本块记得加进下面的选择器。 */
+.hero-intro,
+.hk-text,
+.cta-text,
+.contact-text,
+.about-sub,
+.page-lede,
+.post-lede,
+.nf-text,
+.post-desc,
+.proj-desc,
+.empty {
+  text-wrap: balance;
+}
+
 /* 内联 duotone 图标：跟随字号与 currentColor */
 .icon {
   width: 1em;
