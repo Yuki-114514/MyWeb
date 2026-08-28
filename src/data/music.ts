@@ -1,12 +1,11 @@
 /*
  * 音乐播放器歌单。
  *
- * 换成你自己的歌：
- *   1) 把 mp3 拷进 public/music/（见那里的 README，有文件名和体积的坑）
- *   2) src 写 "/music/文件名.mp3" —— 路径以 /music/ 开头，不要写 public
- *   3) cover 同理写本地图；留空则用樱花→薰衣草的渐变唱片占位
+ * 音频不进仓库（.gitignore 排掉了 public/music/*.mp3），但要进构建产物。
+ * 因此本站的音频只能靠本地 `wrangler pages deploy` 发布 ——
+ * 走 git 推送触发的自动构建会拿不到 mp3。详见 public/music/README.md。
  *
- * src 也支持直接填外部 URL，但要是你自己控制得住的地址。
+ * cover 留空则用樱花→薰衣草的渐变唱片占位。
  *
  * tracks 为空数组时整个播放器不渲染，不会在页面上留一枚点不动的唱片。
  */
@@ -24,33 +23,24 @@ export const music = {
 
   tracks: [
     /*
-     * ⬇️ 下面三首是 SoundHelix 的公开演示音频，只是让你先听个响。
-     *    换成自己的歌时把 src 改成 "/music/xxx.mp3" 即可，格式参考：
-     *
-     *    {
-     *      title: "晨风拂过",
-     *      artist: "某某",
-     *      src: "/music/morning-breeze.mp3",
-     *      cover: "/music/morning-breeze.jpg",
-     *    },
+     * 注意：这首是 Yuusuke 的钢琴独奏版（专辑 Honesty 〜Piano Solo〜），
+     * 不是截图里 glassmoon / RainDrops 的那一版 —— 同名不同曲。
+     * 想换回去就替掉 public/music/ame-agari-no-sora.mp3 再把 artist 改回来。
      */
     {
-      title: "晨风拂过",
-      artist: "示例音频",
-      src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-      cover: "https://t.alcy.cc/pc",
+      title: "雨上がりの空",
+      artist: "Yuusuke",
+      src: "/music/ame-agari-no-sora.mp3",
     },
     {
-      title: "午后的猫",
-      artist: "示例音频",
-      src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
-      cover: "https://t.alcy.cc/pc",
+      title: "Travelers' encore",
+      artist: "Andrew Prahlow",
+      src: "/music/travelers-encore.mp3",
     },
     {
-      title: "星空絮语",
-      artist: "示例音频",
-      src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-      cover: "https://t.alcy.cc/pc",
+      title: "茉莉の夢",
+      artist: "RADWIMPS",
+      src: "/music/jasmine-dream.mp3",
     },
   ] as Track[],
 } as const;

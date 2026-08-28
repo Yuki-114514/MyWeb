@@ -17,3 +17,6 @@ pnpm-debug.log*
 .DS_Store
 .vscode/
 *.local
+
+# 音频走 R2，不进仓库
+public/music/*.mp3
