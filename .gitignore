@@ -18,5 +18,6 @@ pnpm-debug.log*
 .vscode/
 *.local
 
-# 音频走 R2，不进仓库
+# 音乐素材不进仓库（公开仓库，进了历史删不干净），靠本地部署发布
 public/music/*.mp3
+public/music/*.jpg

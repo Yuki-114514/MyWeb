@@ -1,7 +1,7 @@
 # 音频放这里，但不进仓库
 
-mp3 放在这个目录，`.gitignore` 里排掉了 `public/music/*.mp3` —— 文件留在本地，
-不进 git 历史（公开仓库，进去了就删不干净）。
+mp3 和封面 jpg 放在这个目录，`.gitignore` 里排掉了 `*.mp3` 和 `*.jpg` ——
+文件留在本地，不进 git 历史（公开仓库，进去了就删不干净）。
 
 ## ⚠️ 这决定了本站只能手动部署
 
@@ -23,8 +23,18 @@ pnpm build && rm -f dist/music/README.md && wrangler pages deploy dist --project
 
 1. 文件名用 ASCII，别用中文和空格：`morning-breeze.mp3`。
 2. 拷进这个目录。
-3. 在 `src/data/music.ts` 的 `tracks` 里加一条，`src` 写 `/music/morning-breeze.mp3`。
-4. 跑一次上面的部署命令。
+3. 抽封面。多数 mp3 内嵌了 ID3 封面，直接扒出来缩到 256（唱片只显示 48px，
+   原图通常 600+ 是浪费）：
+
+   ```sh
+   ffmpeg -i morning-breeze.mp3 -an -vf scale=256:256 -q:v 4 morning-breeze.jpg
+   ```
+
+   没内嵌封面就 `ffprobe` 查不到 video 流，这步跳过，`cover` 留空即可，
+   会掉回渐变唱片 + ♪ 占位。
+4. 在 `src/data/music.ts` 的 `tracks` 里加一条，`src` 写 `/music/morning-breeze.mp3`，
+   `cover` 写 `/music/morning-breeze.jpg`。
+5. 跑一次上面的部署命令。
 
 ## 几个坑
 

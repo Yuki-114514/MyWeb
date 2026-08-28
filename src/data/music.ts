@@ -5,7 +5,9 @@
  * 因此本站的音频只能靠本地 `wrangler pages deploy` 发布 ——
  * 走 git 推送触发的自动构建会拿不到 mp3。详见 public/music/README.md。
  *
- * cover 留空则用樱花→薰衣草的渐变唱片占位。
+ * cover 是从 mp3 内嵌 ID3 封面里抽出来的，缩到 256×256（唱片只显示 48px）。
+ * 换歌时用 ffmpeg 抽一张同名 jpg 即可，命令见 public/music/README.md。
+ * 留空则掉回樱花→薰衣草的渐变唱片 + ♪ 占位。
  *
  * tracks 为空数组时整个播放器不渲染，不会在页面上留一枚点不动的唱片。
  */
@@ -31,16 +33,19 @@ export const music = {
       title: "雨上がりの空",
       artist: "Yuusuke",
       src: "/music/ame-agari-no-sora.mp3",
+      cover: "/music/ame-agari-no-sora.jpg",
     },
     {
       title: "Travelers' encore",
       artist: "Andrew Prahlow",
       src: "/music/travelers-encore.mp3",
+      cover: "/music/travelers-encore.jpg",
     },
     {
       title: "茉莉の夢",
       artist: "RADWIMPS",
       src: "/music/jasmine-dream.mp3",
+      cover: "/music/jasmine-dream.jpg",
     },
   ] as Track[],
 } as const;
