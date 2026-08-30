@@ -70,23 +70,24 @@ const social: SocialLink[] = [
 export const site = {
   /** 用于 <title> 和 SEO 的站点名 */
   name: "Yuki",
-  fullName: "Yuki Aoki",
+  fullName: "Yuki",
   handle: "@yuki",
   /** 头衔，出现在导航与 hero */
-  role: "开发者 · 写作者",
+  role: "格物 · 造物",
   /** hero 主标语 */
   tagline: "念起成物，事过成文。",
   /** hero 下方的一句自我介绍 */
   intro:
-    "你好呀，我是 Yuki —— 一个喜欢造小工具、也喜欢把日常写下来的独立开发者。这里收着我的作品、文字，和一些软软的碎碎念。",
-  /** 关于页用的更长自述 */
+    "搞机器人和 AI，也唱歌弹琴看动漫。还在到处试，看看以后走哪条路。",
+  /** 关于页用的更长自述，一段一个字符串。空数组时整块不渲染 */
   about: [
-    "我是 Yuki，一名独立开发者兼业余写作者。白天写代码，晚上写字，偶尔也画点小东西。",
-    "我着迷于「小而美」的软件——那些界面干净、用起来顺手、还带点温度的小工具。比起把功能堆满，我更愿意花时间把一个细节打磨到刚刚好。",
-    "写博客是我整理思绪的方式。技术笔记、生活随想、看番心得，什么都写一点。如果哪篇碰巧帮到了你，那就太好啦。",
-  ],
+    "还在读大学，正到处试，想看看以后走哪条路。现在主要在搞机器人和 AI，也自己写点小工具——做的具体是什么隔一阵就换，起因倒是一直没变：用着一个东西，忽然想知道它里面是怎么回事，接着就想自己做一个试试。",
+    "我挺爱琢磨的，做东西也比较轴，喜欢把它拆开来看，没弄懂的地方不太愿意往下走。所以常常绕远路，进度也慢，好处是回头返工少一些。",
+    "不写代码的时候唱歌、弹琴，也看动漫、打游戏。这个站长成现在这个样子，大概就是因为这些。站是我自己写的，做过的东西在项目页，想明白的和还没想明白的写在博客。",
+  ] as string[],
   email: profile.email,
-  location: "地球某处 · UTC+8",
+  /** 留空则「关于」页只显示 role，不会留个孤零零的分隔点 */
+  location: "",
   /** 由 astro.config.mjs 的 SITE_URL 注入，不要在这里改 */
   url: import.meta.env.SITE ?? "http://localhost:4321",
 
@@ -99,39 +100,41 @@ export const site = {
     { label: "关于", href: "/about" },
   ] as NavItem[],
 
+  /** 空数组时「我的工具箱」整块不渲染 */
   skills: [
     {
-      label: "前端",
+      label: "机器人",
       accent: "sakura",
-      items: ["TypeScript", "React", "Astro", "CSS / 动效", "设计系统"],
+      items: ["C++", "ROS 2", "行为树", "tf2", "Eigen"],
     },
     {
-      label: "后端",
+      label: "感知与部署",
       accent: "sky",
-      items: ["Node.js", "Python", "PostgreSQL", "REST / RPC"],
-    },
-    {
-      label: "工具 & 其他",
-      accent: "mint",
-      items: ["Git", "Figma", "Linux", "一点点插画"],
+      items: ["OpenCV", "PCL", "ONNX Runtime"],
     },
   ] as SkillGroup[],
 
+  /** 空数组时「一路走来」整块不渲染 */
   timeline: [
     {
-      when: "现在",
-      title: "独立开发 & 写作",
-      desc: "做自己的小产品，顺手把过程写成博客。",
+      when: "2025.09",
+      title: "加入 RoboMaster 战队",
+      desc: "从零开始接触机器人和 ROS。",
     },
     {
-      when: "2023",
-      title: "某科技公司 · 前端工程师",
-      desc: "负责设计系统与核心页面的体验打磨。",
+      when: "2026.05",
+      title: "接手哨兵",
+      desc: "负责决策、导航与下位机通信协议。",
     },
     {
-      when: "2021",
-      title: "计算机科学 · 学士",
-      desc: "在这里第一次爱上把想法变成能跑的东西。",
+      when: "2026.06",
+      title: "开始做 text2voice",
+      desc: "想把小说听成有声书，市面上没有满意的，就自己写一个。",
+    },
+    {
+      when: "2026.07",
+      title: "搭起自己的学习系统",
+      desc: "用可核查的证据判断掌握程度，而不是「看完了」。",
     },
   ] as TimelineItem[],
 } as const;
