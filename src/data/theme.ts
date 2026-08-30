@@ -37,7 +37,7 @@ export const theme = {
    * 头像（导航栏、关于页、播放器）。留空则用吉祥物 SVG。
    * 放自己的：public/avatar.jpg → "/avatar.jpg"
    */
-  avatar: "https://t.alcy.cc/mp",
+  avatar: "/avatar.jpg",
 
   /*
    * 社交分享卡片图（OG image），建议 1200×630。

@@ -3,6 +3,9 @@
  * accent 决定卡片配色：sakura(粉) / sky(蓝) / mint(绿) / lavender(紫)
  * icon 是 Phosphor duotone 图标名，可用值见 src/components/Icon.astro。
  * featured: true 的项目会出现在首页精选区。
+ *
+ * 空数组时：/projects 显示「还没有项目，敬请期待呀」，首页的精选区整块不渲染。
+ * 加第一个项目时，把下面注释掉的模板复制出来改就行。
  */
 
 import type { IconName } from "@/data/icons";
@@ -24,68 +27,42 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    title: "Mochi 待办",
+    title: "text2voice",
     description:
-      "一个软乎乎的待办清单应用。支持手势拖拽、番茄钟和每日心情记录，界面像棉花糖一样温柔。",
-    tags: ["React", "TypeScript", "PWA"],
-    icon: "list-heart",
+      "把中文小说做成多角色有声书。LLM 标注谁在说话、什么情绪，产出可人工修改的脚本与选角表，确认后再逐句合成语音、混入配乐，导出 mp3 / m4b。逐句缓存按文本与音色指纹寻址，只重合成改动过的句子。",
+    tags: ["Python", "LLM", "IndexTTS2", "ffmpeg"],
+    icon: "chats-circle",
     accent: "sakura",
-    url: "", // TODO: 线上地址，留空则不显示「去看看」
-    repo: "", // TODO: 源码地址，留空则不显示「源码」
-    year: "2024",
+    year: "2026",
     featured: true,
   },
   {
-    title: "Hoshi 天气",
+    title: "RoboMaster 哨兵机器人",
     description:
-      "会讲故事的天气小站。根据天气自动切换插画与配色，下雨天还会有小水滴顺着屏幕滑下来。",
-    tags: ["Astro", "Canvas", "API"],
-    icon: "cloud-sun",
+      "学校 RoboMaster 战队的团队项目，哨兵是全自主机器人。我负责决策、导航与下位机通信：行为树决策引擎、底盘姿态的三层优先级仲裁、云台统一控制，以及多仓工作区的拆分与同步工具。",
+    tags: ["C++", "ROS 2", "行为树", "团队项目"],
+    icon: "rocket",
     accent: "sky",
-    url: "", // TODO: 线上地址，留空则不显示「去看看」
-    year: "2024",
+    year: "2026",
     featured: true,
   },
   {
-    title: "菜谱抽签机",
+    title: "learn",
     description:
-      "「今天吃什么」终结者。摇一摇随机推荐一道菜，附带步骤和购物清单，再也不用纠结啦。",
-    tags: ["Vue", "Node.js"],
-    icon: "cooking-pot",
-    accent: "mint",
-    repo: "", // TODO: 源码地址，留空则不显示「源码」
-    year: "2023",
-    featured: true,
-  },
-  {
-    title: "像素花园",
-    description:
-      "一个可以慢慢养的像素小花园。每写一篇日记就长出一株植物，坚持越久，花园越热闹。",
-    tags: ["TypeScript", "Canvas", "IndexedDB"],
+      "给自己搭的长期学习系统。用可核查的证据判断掌握程度——每条记录都标明是无提示产出还是重度支架，「讲过了」不算学会。目前在跑 CS144 和 Princeton Algorithms。",
+    tags: ["Markdown", "Agent 协议", "自学"],
     icon: "plant",
+    accent: "mint",
+    year: "2026",
+  },
+  {
+    title: "这个小站",
+    description:
+      "你正在看的这个站。Astro 静态站，零运行时 JavaScript，部署在 Cloudflare Pages。",
+    tags: ["Astro", "TypeScript"],
+    icon: "flower",
     accent: "lavender",
-    url: "", // TODO: 线上地址，留空则不显示「去看看」
-    year: "2023",
-    featured: true,
-  },
-  {
-    title: "字帖生成器",
-    description:
-      "输入文字，一键生成可打印的手写练习字帖。支持多种字体田字格，练字党的小福利。",
-    tags: ["React", "SVG", "打印"],
-    icon: "pencil-ruler",
-    accent: "sakura",
-    repo: "", // TODO: 源码地址，留空则不显示「源码」
-    year: "2022",
-  },
-  {
-    title: "番剧追番表",
-    description:
-      "记录正在追的番，自动同步更新时间，到点温柔提醒你「新一集出来啦」。",
-    tags: ["Next.js", "PostgreSQL"],
-    icon: "television",
-    accent: "sky",
-    url: "", // TODO: 线上地址，留空则不显示「去看看」
-    year: "2022",
+    repo: "https://github.com/Yuki-114514/MyWeb",
+    year: "2026",
   },
 ];
