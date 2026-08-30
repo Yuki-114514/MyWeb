@@ -9,13 +9,13 @@ const tags = collectTags(posts);
 const pages = totalPages(posts.length);
 ---
 
-<BaseLayout title="博客" description="技术笔记、生活随想，和一些软软的碎碎念。">
+<BaseLayout title="博客" description="学到的东西和踩过的坑。">
   <section class="container container-narrow">
     <header class="page-head rise">
       <span class="eyebrow">✦ Blog</span>
-      <h1 class="page-title">碎碎念 &amp; 笔记本</h1>
+      <h1 class="page-title">笔记本</h1>
       <p class="page-lede">
-        这里存着我想留久一点的文字——技术踩坑、生活小事、看番心得。想到什么写什么，随缘更新。
+        学到的东西和踩过的坑，想到什么写什么。
       </p>
       {tags.length > 0 && <TagRow tags={tags} showCount class="head-tags" />}
     </header>

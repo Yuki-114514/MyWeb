@@ -18,9 +18,9 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft))
   .slice(0, 3);
 
 const roles: { icon: IconName; label: string }[] = [
-  { icon: "code", label: "独立开发" },
-  { icon: "pen-nib", label: "写作" },
-  { icon: "game-controller", label: "二次元" },
+  { icon: "rocket", label: "机器人" },
+  { icon: "code", label: "自学 CS" },
+  { icon: "list-heart", label: "唱歌" },
 ];
 ---
 
@@ -43,7 +43,7 @@ const roles: { icon: IconName; label: string }[] = [
             <span class="hk-mark" aria-hidden="true">
               ❞
             </span>
-            <span class="hk-text">愿你我都能成为温柔的大人。</span>
+            <span class="hk-text">正因为没有翅膀，人们才会去寻找飞翔之法。</span>
           </p>
         )
       }
@@ -149,7 +149,7 @@ const roles: { icon: IconName; label: string }[] = [
       <Icon name="chats-circle" class="cta-icon" />
       <h2 class="cta-title">想聊聊天？</h2>
       <p class="cta-text">
-        无论是合作、约稿，还是单纯想打个招呼——都欢迎来找我呀。
+        想问什么都能找我，打个招呼也行。
       </p>
       {
         site.email ? (
