@@ -33,6 +33,7 @@ export const projects: Project[] = [
     tags: ["Python", "LLM", "IndexTTS2", "ffmpeg"],
     icon: "chats-circle",
     accent: "sakura",
+    repo: "https://github.com/Yuki-114514/text2voice",
     year: "2026",
     featured: true,
   },
@@ -53,6 +54,7 @@ export const projects: Project[] = [
     tags: ["Markdown", "Agent 协议", "自学"],
     icon: "plant",
     accent: "mint",
+    repo: "https://github.com/Yuki-114514/learn",
     year: "2026",
   },
   {
